@@ -2,6 +2,6 @@
 A simple log compression and query service.
 
 ### Authors
-- [Shashank Saxena](https://shashanksaxena.me)
-- [Rahul Surti](https://rahulsurti97.github.io)
-- [Sujay Patwardhan](https://sujaypat.github.io)
+- [Shashank Saxena](https://github.com/Salil999)
+- [Sujay Patwardhan](https://github.com/sujaypat)
+- [Rahul Surti](https://github.com/rahulsurti97)
