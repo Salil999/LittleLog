@@ -70,21 +70,11 @@ public final class Logger {
 	/**
 	 * Writes a log entry to the print stream with a tag value.
 	 *
-	 * @param msg Message that will be logged
-	 * @param tag Tag value to indicate a type of log. Can be used with
-	 *            the above constants or can be a custom tag
+	 * @param args Strings of the form "value" where value is a
+	 * 			   desired value in the log
 	 */
-	public void log(String msg, String tag) {
-		this.printStream.println(formatMessage(msg, tag));
-	}
-
-	/**
-	 * Writes a log entry to the print stream.
-	 *
-	 * @param msg Message that will be logged
-	 */
-	public void log(String msg) {
-		this.printStream.println(formatMessage(msg));
+	public void log(String... args) {
+		this.printStream.println(formatMessage(args));
 	}
 
 	/**
@@ -97,8 +87,15 @@ public final class Logger {
 	 * @return formattedMsg The "nicely" formatted message
 	 */
 	@NotNull
-	private String formatMessage(String msg, String tag) {
-		return "[" + LocalDate.now() + "] [" + LocalTime.now() + "] [" + tag + "] " + msg;
+	private String formatMessage(String... args) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[" + LocalDate.now() + "] ");
+		sb.append("[" + LocalTime.now() + "] ");
+		for (String arg : args){
+			sb.append("[" + arg + "] ");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		return sb.toString();
 	}
 
 	/**
