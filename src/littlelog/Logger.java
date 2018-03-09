@@ -70,47 +70,29 @@ public final class Logger {
 	/**
 	 * Writes a log entry to the print stream with a tag value.
 	 *
-	 * @param msg Message that will be logged
-	 * @param tag Tag value to indicate a type of log. Can be used with
-	 *            the above constants or can be a custom tag
+	 * @param args Strings that are to be included in the log, where the last arg
+	 * 			   is the message in the log
 	 */
-	public void log(String msg, String tag) {
-		this.printStream.println(formatMessage(msg, tag));
-	}
-
-	/**
-	 * Writes a log entry to the print stream.
-	 *
-	 * @param msg Message that will be logged
-	 */
-	public void log(String msg) {
-		this.printStream.println(formatMessage(msg));
+	public void log(String... args) {
+		this.printStream.println(formatMessage(args));
 	}
 
 	/**
 	 * Formats a message to "nicely" display the log message with some
 	 * other information (like date and time).
 	 *
-	 * @param msg Message that will be logged
-	 * @param tag Tag value to indicate a type of log. Can be used with
-	 *            the above constants to can be a custom tag
-	 * @return formattedMsg The "nicely" formatted message
+	 * @param args Strings that are to be included in the log, where the last arg
+	 * 			   is the message in the log
 	 */
 	@NotNull
-	private String formatMessage(String msg, String tag) {
-		return "[" + LocalDate.now() + "] [" + LocalTime.now() + "] [" + tag + "] " + msg;
-	}
-
-	/**
-	 * Formats a message to "nicely" display the log message with some
-	 * other information (like date and time).
-	 *
-	 * @param msg Message that will be logged
-	 *
-	 * @return formattedMsg The "nicely" formatted message
-	 */
-	@NotNull
-	private String formatMessage(String msg) {
-		return "[" + LocalDate.now() + "] [" + LocalTime.now() + "] " + msg;
+	private String formatMessage(String... args) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[" + LocalDate.now() + "] ");
+		sb.append("[" + LocalTime.now() + "] ");
+		for(int i = 0; i < args.length - 1; i++){
+			sb.append("[" + args[i] + "] ");
+		}
+		sb.append(args[args.length - 1]);
+		return sb.toString();
 	}
 }
