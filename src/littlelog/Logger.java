@@ -15,11 +15,11 @@ public final class Logger {
 	 * Some constants for quick referencing on commonly used
 	 * tag values
 	 */
-	public static String VERBOSE = "VERBOSE";
-	public static String INFO = "INFO";
-	public static String ERROR = "ERROR";
-	public static String WARN = "WARN";
-	public static String DEBUG = "DEBUG";
+	public static final String VERBOSE = "VERBOSE";
+	public static final String INFO = "INFO";
+	public static final String ERROR = "ERROR";
+	public static final String WARN = "WARN";
+	public static final String DEBUG = "DEBUG";
 
 	/**
 	 * Every object will hold a PrintStream object
@@ -33,7 +33,7 @@ public final class Logger {
 	 *
 	 * @param ps PrintStream object to be written to
 	 */
-	public Logger(PrintStream ps) {
+	public Logger(final PrintStream ps) {
 		this.printStream = ps;
 	}
 
@@ -50,7 +50,7 @@ public final class Logger {
 	 * @return A PrintStream object
 	 */
 	PrintStream getPrintStream() {
-		return printStream;
+		return this.printStream;
 	}
 
 	/**
@@ -58,7 +58,7 @@ public final class Logger {
 	 *
 	 * @param printStream The PrintStream to set to
 	 */
-	public void setPrintStream(PrintStream printStream) {
+	public void setPrintStream(final PrintStream printStream) {
 		this.printStream = printStream;
 	}
 
@@ -66,9 +66,9 @@ public final class Logger {
 	 * Writes a log entry to the print stream with a tag value.
 	 *
 	 * @param args Strings that are to be included in the log, where the last arg
-	 * 			   is the message in the log
+	 *             is the message in the log
 	 */
-	public void log(String... args) {
+	public void log(final String... args) {
 		this.printStream.println(formatMessage(args));
 	}
 
@@ -77,13 +77,13 @@ public final class Logger {
 	 * other information (like date and time).
 	 *
 	 * @param args Strings that are to be included in the log, where the last arg
-	 * 			   is the message in the log
+	 *             is the message in the log
 	 */
-	private String formatMessage(String... args) {
-		StringBuilder sb = new StringBuilder();
+	private String formatMessage(final String... args) {
+		final StringBuilder sb = new StringBuilder();
 		sb.append("[" + LocalDate.now() + "] ");
 		sb.append("[" + LocalTime.now() + "] ");
-		for(int i = 0; i < args.length - 1; i++){
+		for (int i = 0; i < args.length - 1; i++) {
 			sb.append("[" + args[i] + "] ");
 		}
 		sb.append(args[args.length - 1]);
