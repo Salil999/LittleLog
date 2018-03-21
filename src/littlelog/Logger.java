@@ -1,8 +1,5 @@
 package littlelog;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.PrintStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,7 +33,6 @@ public final class Logger {
 	 *
 	 * @param ps PrintStream object to be written to
 	 */
-	@NotNull
 	public Logger(PrintStream ps) {
 		this.printStream = ps;
 	}
@@ -53,7 +49,6 @@ public final class Logger {
 	 *
 	 * @return A PrintStream object
 	 */
-	@Contract(pure = true)
 	PrintStream getPrintStream() {
 		return printStream;
 	}
@@ -84,7 +79,6 @@ public final class Logger {
 	 * @param args Strings that are to be included in the log, where the last arg
 	 * 			   is the message in the log
 	 */
-	@NotNull
 	private String formatMessage(String... args) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[" + LocalDate.now() + "] ");
