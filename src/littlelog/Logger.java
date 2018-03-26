@@ -15,11 +15,11 @@ public final class Logger {
 	 * Some constants for quick referencing on commonly used
 	 * tag values
 	 */
-	public static String VERBOSE = "VERBOSE";
-	public static String INFO = "INFO";
-	public static String ERROR = "ERROR";
-	public static String WARN = "WARN";
-	public static String DEBUG = "DEBUG";
+	public static final String VERBOSE = "VERBOSE";
+	public static final String INFO = "INFO";
+	public static final String ERROR = "ERROR";
+	public static final String WARN = "WARN";
+	public static final String DEBUG = "DEBUG";
 
 	/**
 	 * Every object will hold a PrintStream object
