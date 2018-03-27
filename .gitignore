@@ -52,3 +52,5 @@ fabric.properties
 .idea/*
 *.iml
 lib/*
+*.txt
+*.succinct

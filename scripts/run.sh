@@ -1,6 +1,6 @@
 #!/bin/bash
 
 cd $(pwd)/../src/
-rm littlelog/*.class
-javac -cp . littlelog/*.java
-java -cp . littlelog/Main
+javac -cp .:$(pwd)/../lib/succinct-0.1.6.jar littlelog/*.java
+java -cp .:$(pwd)/../lib/succinct-0.1.6.jar littlelog/Main
+find . -type f -path "*/*" -name "*.class" -exec rm -f {} \;
