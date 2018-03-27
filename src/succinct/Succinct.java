@@ -38,7 +38,7 @@ public class Succinct {
                 System.exit(-1);
             }
             final byte[] fileData = new byte[(int) file.length()];
-            System.out.println("File size: " + fileData.length + " bytes");
+            System.out.println(filename + " File size: " + fileData.length + " bytes");
             this.fileSize = fileData.length;
             final DataInputStream dis = new DataInputStream(new FileInputStream(file));
             dis.readFully(fileData, 0, (int) file.length());
@@ -81,7 +81,8 @@ public class Succinct {
 
     public void extract(final Integer offset, final Integer length) {
         final String extracted = new String(this.succinctFileBuffer.extract(offset, length));
-        System.out.println("Extract[" + offset + ", " + length + "] = " + extracted);
+//        System.out.println("Extract[" + offset + ", " + length + "] = " + extracted);
+        System.out.println("Extracted Length: " + extracted.length() + " bytes");
     }
 
     public void regex(final String query) {

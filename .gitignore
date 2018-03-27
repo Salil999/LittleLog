@@ -54,3 +54,4 @@ fabric.properties
 lib/*
 *.txt
 *.succinct
+*.log
