@@ -37,7 +37,6 @@ public class Succinct {
                 System.err.println("Cant handle files > 2GB");
                 System.exit(-1);
             }
-            80
             final byte[] fileData = new byte[(int) file.length()];
             System.out.println("File size: " + fileData.length + " bytes");
             this.fileSize = fileData.length;
