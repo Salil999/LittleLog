@@ -6,6 +6,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -39,18 +41,38 @@ public class LittleLogConsumer<K, V> implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
-			final ConsumerRecords<K, V> consumerRecords = this.consumer.poll(500);
-//			if (consumerRecords.count() == 0) {
-//				break;
-//			}
-			for (final ConsumerRecord<K, V> record : consumerRecords) {
-				System.out.println(String.format("Consumer Record: (%s, %s, %d, %d)", record.key(), record.value(),
-						record.partition(), record.offset()));
+		try {
+			FileWriter writer;
+			File directory;
+			long currentSize = 0;
+			final int maxLogNumber = 0;
+			while (true) {
+				final ConsumerRecords<K, V> consumerRecords = this.consumer.poll(500);
+
+				directory = new File("/Users/Salil/Desktop/LittleLog/logs/ll-" + maxLogNumber + ".log");
+				if (!directory.exists()) {
+					directory.getParentFile().mkdirs();
+					directory.createNewFile();
+				}
+
+				writer = new FileWriter(directory, true);
+				for (final ConsumerRecord<K, V> record : consumerRecords) {
+					final String key = record.key().toString();
+					final String value = record.value().toString();
+					writer.write(String.format("%s, %s\n", key, value));
+				}
+				writer.close();
+				currentSize = directory.length();
+				if (currentSize > 1e7) {
+//				maxLogNumber++;
+					break;
+				}
+				this.consumer.commitAsync();
 			}
-			this.consumer.commitAsync();
+			this.consumer.close();
+			System.out.println("Finished!");
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
-//		this.consumer.close();
-//		System.out.println("Finished!");
 	}
 }
