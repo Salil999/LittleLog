@@ -16,20 +16,21 @@ public class LittleLogConsumer<K, V> implements Runnable {
 	private final KafkaConsumer<K, V> consumer;
 	private final Class keyClass;
 	private final Class valueClass;
-	private final long chunkSize;
+	private final double chunkSize;
 
 	public LittleLogConsumer() {
 		this("test", "localhost:9092", 1e9, StringDeserializer.class, StringDeserializer.class);
 	}
 
-	public LittleLogConsumer(final Properties props, final Class keyClass, final long chunkSize, final Class valueClass) {
+	public LittleLogConsumer(final Properties props, final Class keyClass, final double chunkSize, final Class
+			valueClass) {
 		this.consumer = new KafkaConsumer<>(props);
 		this.keyClass = keyClass;
 		this.valueClass = valueClass;
 		this.chunkSize = chunkSize;
 	}
 
-	public LittleLogConsumer(final String topic, final String bootstrapServers, final long chunkSize, final Class
+	public LittleLogConsumer(final String topic, final String bootstrapServers, final double chunkSize, final Class
 			keyClass, final Class valueClass) {
 		final Properties props = new Properties();
 		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
