@@ -41,7 +41,7 @@ public final class Logger {
 	 * Constructs the object with the system default PrintStream.
 	 */
 	public Logger() {
-		this.printStream = System.out;
+		this(System.out);
 	}
 
 	/**
