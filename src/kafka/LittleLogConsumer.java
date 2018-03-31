@@ -37,11 +37,18 @@ public class LittleLogConsumer<K, V> implements Runnable {
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyClass.getName());
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueClass.getName());
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, topic);
+		props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, 150728640);
 		this.keyClass = keyClass;
 		this.valueClass = valueClass;
 		this.consumer = new KafkaConsumer<>(props);
 		this.consumer.subscribe(Collections.singleton(topic));
 		this.chunkSize = chunkSize;
+	}
+
+	public LittleLogConsumer(final Properties props, final Class keyClass, final Class valueClass) {
+		this.consumer = new KafkaConsumer<>(props);
+		this.keyClass = keyClass;
+		this.valueClass = valueClass;
 	}
 
 	@Override
