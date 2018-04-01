@@ -1,6 +1,5 @@
 package kafka;
 
-import littlelog.LittleLog;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -21,16 +20,8 @@ public class LittleLogConsumer<K, V> implements Runnable {
 	private final double chunkSize;
 
 	public LittleLogConsumer() {
-		this("test", "localhost:9092", 20.0 * ONE_MB, StringDeserializer.class, StringDeserializer
+		this("test", "localhost:9092", 50.0 * LittleLogConsumer.ONE_MB, StringDeserializer.class, StringDeserializer
 				.class);
-	}
-
-	public LittleLogConsumer(final Properties props, final Class keyClass, final double chunkSize, final Class
-			valueClass) {
-		this.consumer = new KafkaConsumer<>(props);
-		this.keyClass = keyClass;
-		this.valueClass = valueClass;
-		this.chunkSize = chunkSize;
 	}
 
 	public LittleLogConsumer(final String topic, final String bootstrapServers, final double chunkSize, final Class
@@ -48,6 +39,14 @@ public class LittleLogConsumer<K, V> implements Runnable {
 		this.chunkSize = chunkSize;
 	}
 
+	public LittleLogConsumer(final Properties props, final Class keyClass, final double chunkSize, final Class
+			valueClass) {
+		this.consumer = new KafkaConsumer<>(props);
+		this.keyClass = keyClass;
+		this.valueClass = valueClass;
+		this.chunkSize = chunkSize;
+	}
+
 	@Override
 	public void run() {
 		System.out.println("Consumer started!");
@@ -56,13 +55,13 @@ public class LittleLogConsumer<K, V> implements Runnable {
 			File directory;
 			long currentSize;
 			int maxLogNumber = 0;
-			final LittleLog littleLog = new LittleLog("compressed_logs/");
+//			final LittleLog littleLog = new LittleLog("compressed_logs/");
 			final BufferedReader reader = new BufferedReader(new FileReader("../kafka_scripts/http.log"));
 			String currLine;
 			while ((currLine = reader.readLine()) != null) {
 //				final ConsumerRecords<K, V> consumerRecords = this.consumer.poll(500);
 
-				directory = new File("/Users/Salil/Desktop/LittleLog/src/logs/ll_" + maxLogNumber + ".log");
+				directory = new File("/Users/rahulsurti/Desktop/cs525/LittleLog/src/logs/ll_" + maxLogNumber + ".log");
 				if (!directory.exists()) {
 					directory.getParentFile().mkdirs();
 					directory.createNewFile();
@@ -81,12 +80,13 @@ public class LittleLogConsumer<K, V> implements Runnable {
 				currentSize = directory.length();
 
 				if (currentSize > this.chunkSize) {
-					littleLog.compress("logs/ll_" + maxLogNumber + ".log");
+//					littleLog.compress("logs/ll_" + maxLogNumber + ".log");
 					maxLogNumber++;
 
 				}
 
 				this.consumer.commitAsync();
+//				littleLog.shutdown();
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();

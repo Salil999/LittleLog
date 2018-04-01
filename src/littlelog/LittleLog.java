@@ -10,7 +10,7 @@ public class LittleLog {
     String outputDirectory;
 
     public LittleLog(final String outputDirectory) {
-        this.pool = Executors.newCachedThreadPool();
+        this.pool = Executors.newFixedThreadPool(1);
         this.outputDirectory = outputDirectory;
     }
 
@@ -72,6 +72,13 @@ public class LittleLog {
             } else if (file.isDirectory()) {
                 this.listf(file.getAbsolutePath(), files);
             }
+        }
+    }
+
+    public void compressDirectory(final String directory) {
+        final ArrayList<String> files = this.getAllFiles(directory);
+        for (final String f : files) {
+            this.compress(directory + f);
         }
     }
 
