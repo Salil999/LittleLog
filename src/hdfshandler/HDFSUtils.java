@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 public final class HDFSUtils {
 
     private static String hdfsUri = "hdfs://node-master:9000";
-    private static final Logger logger = Logger.getLogger("HDFSHandler");
 
     public static void writeToHDFS(String path, String fileName, String contents) throws Exception {
         // ====== Init HDFS File System Object
@@ -31,10 +30,8 @@ public final class HDFSUtils {
         if(!fs.exists(newFolderPath)) {
             // Create new Directory
             fs.mkdirs(newFolderPath);
-            logger.info("Path "+path+" created.");
         }
 
-        logger.info("Begin Write file into hdfs");
         //Create a path
         Path hdfswritepath = new Path(newFolderPath + "/" + fileName);
         //Init output stream
@@ -42,7 +39,6 @@ public final class HDFSUtils {
         //Classical output stream usage
         outputStream.writeBytes(contents);
         outputStream.close();
-        logger.info("End Write file into hdfs");
     }
 
     public static String readFromHDFS(String path, String fileName) throws Exception {
@@ -59,16 +55,14 @@ public final class HDFSUtils {
         //Get the filesystem - HDFS
         FileSystem fs = FileSystem.get(URI.create(hdfsUri), conf);
 
-        Path newFolderPath= new Path(path);
+        Path newFolderPath = new Path(path);
 
-        logger.info("Read file into hdfs");
         //Create a path
         Path hdfsreadpath = new Path(newFolderPath + "/" + fileName);
         //Init input stream
         FSDataInputStream inputStream = fs.open(hdfsreadpath);
         //Classical input stream usage
         String out = IOUtils.toString(inputStream, "UTF-8");
-        logger.info(out);
         inputStream.close();
         fs.close();
         return out;
