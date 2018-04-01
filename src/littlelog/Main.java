@@ -1,20 +1,21 @@
 package littlelog;
 
+import java.io.File;
+
 public class Main {
     public static void main(final String[] args) {
 //        final LittleLogConsumer consumer = new LittleLogConsumer();
 //        new Thread(consumer).start();
 //        Main.succinctTest("test", ".txt", "GET");
 //
-        final LittleLog littleLog = new LittleLog("compressed_logs/");
+//        final LittleLog littleLog = new LittleLog();
 //        littleLog.compress("logfiles/read.log");
-//        littleLog.count("12/Aug/2019");
-        littleLog.search("12/Aug/2019");
-        littleLog.shutdown();
-//        final SuccinctLog succinctLog = new SuccinctLog("access", "compressed_logs/");
-//        succinctLog.regex("83.167.113.100");
+//        littleLog.search("12/Aug/2019");
+//        littleLog.shutdown();
 
 
+        final File file = new File("src/logfiles/access.log");
+        System.out.println(file.getName());
     }
 
 

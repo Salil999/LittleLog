@@ -9,20 +9,15 @@ public class LittleLog {
     ExecutorService pool;
     String outputDirectory;
 
-    public LittleLog(final String outputDirectory) {
+    public LittleLog() {
         this.pool = Executors.newCachedThreadPool();
-        this.outputDirectory = outputDirectory;
     }
 
     public void count(final String query) {
         this.runSuccinctTask(SuccinctTaskType.COUNT, query);
     }
 
-    public void search(final String query) {
-        this.runSuccinctTask(SuccinctTaskType.SEARCH, query);
-    }
-
-    public void regex(final String query) {
+    public void query(final String query) {
         this.runSuccinctTask(SuccinctTaskType.REGEX, query);
     }
 
@@ -43,14 +38,14 @@ public class LittleLog {
         }
     }
 
-    public void compress(final String filename) {
-        try {
-            final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, filename, this.outputDirectory);
-            this.pool.execute(succinctTask);
-        } catch (final Exception e) {
-            System.out.println(e.getLocalizedMessage());
-        }
-    }
+//    public void compress(final File file) {
+//        try {
+//            final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, file.getAbsolutePath());
+//            this.pool.execute(succinctTask);
+//        } catch (final Exception e) {
+//            System.out.println(e.getLocalizedMessage());
+//        }
+//    }
 
     public void shutdown() {
         this.pool.shutdown();
@@ -73,6 +68,10 @@ public class LittleLog {
                 this.listf(file.getAbsolutePath(), files);
             }
         }
+    }
+
+    private void getDirectory(final File file) {
+//        file.getCanonicalPath();
     }
 
 //

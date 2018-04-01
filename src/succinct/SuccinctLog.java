@@ -17,28 +17,14 @@ import static java.lang.Math.toIntExact;
 
 public class SuccinctLog {
 
-    private final String filename;
-    private final String extension;
-    private final String inputDirectory;
-    private final String outputDirectory;
+    private final File file;
     private Integer fileSize;
     private SuccinctFileBuffer succinctFileBuffer;
 
-    public SuccinctLog(final String filename, final String extension, final String inputDirectory, final String outputDirectory) {
-        this.filename = filename;
-        this.extension = extension;
-        this.inputDirectory = inputDirectory;
-        this.outputDirectory = outputDirectory;
+    public SuccinctLog(final File file) {
+        this.file = file;
         this.fileSize = 0;
-    }
-
-    public SuccinctLog(final String filename, final String inputDirectory) {
-        this.filename = filename;
-        this.extension = "succinct";
-        this.inputDirectory = inputDirectory;
-        this.outputDirectory = "";
-        this.fileSize = 0;
-        this.succinctFileBuffer = this.readFromFile(this.inputDirectory + this.filename + "." + this.extension);
+        this.succinctFileBuffer = this.readFromFile(file.getAbsolutePath());
     }
 
     private SuccinctFileBuffer readFromFile(final String filename) {
@@ -47,6 +33,7 @@ public class SuccinctLog {
             if (filename.endsWith(".succinct")) {
 //                System.out.println(filename);
                 succinctFileBuffer.readFromFile(filename);
+                this.fileSize = succinctFileBuffer.getSize();
                 return succinctFileBuffer;
             }
 
@@ -69,8 +56,8 @@ public class SuccinctLog {
     }
 
     public void compressFile() {
-        System.out.println("Compressing " + this.filename + "." + this.extension);
-        this.succinctFileBuffer = this.readFromFile(this.inputDirectory + this.filename + "." + this.extension);
+        System.out.println("Compressing " + this.file.getAbsolutePath());
+        this.succinctFileBuffer = this.readFromFile(this.file.getAbsolutePath());
         this.writeToFile(this.outputDirectory + this.filename + ".succinct");
     }
 
