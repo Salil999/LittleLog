@@ -18,9 +18,9 @@ public class LittleLog {
         this.runSuccinctTask(SuccinctTaskType.COUNT, query);
     }
 
-    public void search(final String query) {
-        this.runSuccinctTask(SuccinctTaskType.SEARCH, query);
-    }
+//    public void search(final String query) {
+//        this.runSuccinctTask(SuccinctTaskType.SEARCH, query);
+//    }
 
     public void regex(final String query) {
         this.runSuccinctTask(SuccinctTaskType.REGEX, query);
