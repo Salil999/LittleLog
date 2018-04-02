@@ -2,8 +2,12 @@ package littlelog;
 
 public class Main {
     public static void main(final String[] args) {
-        final LittleLog littleLog = new LittleLog();
-        littleLog.compressDirectory("/Users/rahulsurti/Desktop/cs525/LittleLog/src/logfiles/chunked_200MB");
-        littleLog.shutdown();
+        if (args.length == 1) {
+            final LittleLog littleLog = new LittleLog();
+            littleLog.compressDirectory(args[0]);
+            littleLog.shutdown();
+        } else {
+            System.out.println("Parameters: [input-directory-to-compress]");
+        }
     }
 }
