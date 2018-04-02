@@ -8,8 +8,8 @@ import java.util.concurrent.Executors;
 public class LittleLog {
     ExecutorService pool;
 
-    public LittleLog(final Integer threadPoolSize) {
-        this.pool = Executors.newFixedThreadPool(threadPoolSize);
+    public LittleLog(final Integer nThreads) {
+        this.pool = Executors.newFixedThreadPool(nThreads);
     }
 
     public LittleLog() {
@@ -25,6 +25,10 @@ public class LittleLog {
                 se.printStackTrace();
             }
         }
+    }
+
+    public void setThreadPoolSize(final Integer nThreads) {
+        this.pool = Executors.newFixedThreadPool(nThreads);
     }
 
     public void compress(final String inputFilepath, final String outputFilepath) {
@@ -46,11 +50,13 @@ public class LittleLog {
 
     private void runSuccinctTask(final SuccinctTaskType succinctTaskType, final String directory, final String query) {
         for (final String filepath : this.getAllFiles(directory)) {
-            try {
-                final SuccinctTask succinctTask = new SuccinctTask(succinctTaskType, filepath, "", query);
-                this.pool.execute(succinctTask);
-            } catch (final Exception e) {
-                e.printStackTrace();
+            if (filepath.endsWith(".succinct")) {
+                try {
+                    final SuccinctTask succinctTask = new SuccinctTask(succinctTaskType, filepath, "", query);
+                    this.pool.execute(succinctTask);
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
