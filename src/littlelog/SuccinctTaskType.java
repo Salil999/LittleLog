@@ -1,5 +1,5 @@
 package littlelog;
 
 public enum SuccinctTaskType {
-    COMPRESS, SEARCH, REGEX, COUNT
+    COMPRESS, QUERY, COUNT
 }

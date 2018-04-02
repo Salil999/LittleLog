@@ -1,41 +1,16 @@
 package littlelog;
 
-import succinct.SuccinctLog;
-
 public class SuccinctTask implements Runnable {
     private final SuccinctTaskType succinctTaskType;
-    private final String inputDirectory;
-    private final String outputDirectory;
-    private final String filename;
-    private final String extension;
-    private String query;
+    private final String inputFilepath;
+    private final String outputFilepath;
+    private final String query;
 
-
-    public SuccinctTask(final SuccinctTaskType succinctTaskType, final String filepath, final String outputDirectory) throws Exception {
+    public SuccinctTask(final SuccinctTaskType succinctTaskType, final String inputFilepath, final String outputFilepath, final String query) {
         this.succinctTaskType = succinctTaskType;
-
-        String[] split = filepath.split("/");
-        if (split.length != 2) {
-            throw new Exception("couldn't parse filepath " + filepath);
-        }
-        this.inputDirectory = split[0] + '/';
-
-        split = split[1].split("\\.");
-        if (split.length != 2) {
-            throw new Exception("couldn't parse filepath " + filepath);
-        }
-        this.filename = split[0];
-        this.extension = split[1];
-        this.outputDirectory = outputDirectory;
-    }
-
-    private SuccinctTask(final Builder b) {
-        this.succinctTaskType = b.succinctTaskType;
-        this.inputDirectory = b.inputDirectory;
-        this.filename = b.filename;
-        this.extension = b.extension;
-        this.outputDirectory = b.outputDirectory;
-        this.query = b.query;
+        this.inputFilepath = inputFilepath;
+        this.outputFilepath = outputFilepath;
+        this.query = query;
     }
 
     @Override
@@ -43,70 +18,20 @@ public class SuccinctTask implements Runnable {
         final SuccinctLog succinctLog;
         switch (this.succinctTaskType) {
             case COMPRESS:
-                succinctLog = new SuccinctLog(this.filename, this.extension, this.inputDirectory, this.outputDirectory);
-                succinctLog.compressFile();
+                final Compressor compressor = new Compressor();
+                compressor.compress(this.inputFilepath, this.outputFilepath);
                 break;
             case COUNT:
-                succinctLog = new SuccinctLog(this.filename, this.outputDirectory);
+                succinctLog = new SuccinctLog(this.inputFilepath);
                 succinctLog.count(this.query);
                 break;
-            case REGEX:
-                succinctLog = new SuccinctLog(this.filename, this.outputDirectory);
-                succinctLog.regex(this.query);
-                break;
-            case SEARCH:
-                succinctLog = new SuccinctLog(this.filename, this.outputDirectory);
-                succinctLog.search(this.query);
+            case QUERY:
+                succinctLog = new SuccinctLog(this.inputFilepath);
+                succinctLog.query(this.query);
                 break;
             default:
                 System.out.println("SuccinctTaskType: " + this.succinctTaskType + " not valid");
                 break;
         }
-    }
-
-    public static class Builder {
-        private String query;
-        private String filename;
-        private String extension;
-        private SuccinctTaskType succinctTaskType;
-        private String inputDirectory;
-        private String outputDirectory;
-
-        public Builder succinctTaskType(final SuccinctTaskType succinctTaskType) {
-            this.succinctTaskType = succinctTaskType;
-            return this;
-        }
-
-        public Builder filepath(final String filepath) throws Exception {
-            String[] split = filepath.split("/");
-            if (split.length != 2) {
-                throw new Exception("couldn't parse filepath " + filepath);
-            }
-            this.inputDirectory = split[0] + '/';
-
-            split = split[1].split("\\.");
-            if (split.length != 2) {
-                throw new Exception("couldn't parse filepath " + filepath);
-            }
-            this.filename = split[0];
-            this.extension = split[1];
-            return this;
-        }
-
-        public Builder outputDirectory(final String outputDirectory) {
-            this.outputDirectory = outputDirectory;
-            return this;
-        }
-
-        public Builder query(final String query) {
-            this.query = query;
-            return this;
-        }
-
-        public SuccinctTask build() {
-            return new SuccinctTask(this);
-        }
-
-
     }
 }

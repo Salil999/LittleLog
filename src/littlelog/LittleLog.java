@@ -7,48 +7,51 @@ import java.util.concurrent.Executors;
 
 public class LittleLog {
     ExecutorService pool;
-    String outputDirectory;
 
-    public LittleLog(final String outputDirectory) {
+    public LittleLog(final Integer threadPoolSize) {
+        this.pool = Executors.newFixedThreadPool(threadPoolSize);
+    }
+
+    public LittleLog() {
         this.pool = Executors.newFixedThreadPool(1);
-        this.outputDirectory = outputDirectory;
     }
 
-    public void count(final String query) {
-        this.runSuccinctTask(SuccinctTaskType.COUNT, query);
-    }
-
-//    public void search(final String query) {
-//        this.runSuccinctTask(SuccinctTaskType.SEARCH, query);
-//    }
-
-    public void regex(final String query) {
-        this.runSuccinctTask(SuccinctTaskType.REGEX, query);
-    }
-
-    private void runSuccinctTask(final SuccinctTaskType succinctTaskType, final String query) {
-        for (final String filename : this.getAllFiles(this.outputDirectory)) {
-            final String filepath = this.outputDirectory + filename;
+    private static void createDirectory(final String pathname) {
+        final File theDir = new File(pathname);
+        if (!theDir.exists()) {
             try {
-                final SuccinctTask succinctTask = new SuccinctTask.Builder()
-                        .succinctTaskType(succinctTaskType)
-                        .filepath(filepath)
-                        .outputDirectory(this.outputDirectory)
-                        .query(query)
-                        .build();
-                this.pool.execute(succinctTask);
-            } catch (final Exception e) {
-                e.printStackTrace();
+                theDir.mkdirs();
+            } catch (final SecurityException se) {
+                se.printStackTrace();
             }
         }
     }
 
-    public void compress(final String filename) {
+    public void compress(final String inputFilepath, final String outputFilepath) {
         try {
-            final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, filename, this.outputDirectory);
+            final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, inputFilepath, outputFilepath, "");
             this.pool.execute(succinctTask);
         } catch (final Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void count(final String query, final String directory) {
+        this.runSuccinctTask(SuccinctTaskType.COUNT, directory, query);
+    }
+
+    public void query(final String query, final String directory) {
+        this.runSuccinctTask(SuccinctTaskType.QUERY, directory, query);
+    }
+
+    private void runSuccinctTask(final SuccinctTaskType succinctTaskType, final String directory, final String query) {
+        for (final String filepath : this.getAllFiles(directory)) {
+            try {
+                final SuccinctTask succinctTask = new SuccinctTask(succinctTaskType, filepath, "", query);
+                this.pool.execute(succinctTask);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -68,7 +71,7 @@ public class LittleLog {
         final File[] fList = directory.listFiles();
         for (final File file : fList) {
             if (file.isFile()) {
-                files.add(file.getName());
+                files.add(file.getAbsolutePath());
             } else if (file.isDirectory()) {
                 this.listf(file.getAbsolutePath(), files);
             }
@@ -76,13 +79,34 @@ public class LittleLog {
     }
 
     public void compressDirectory(final String directory) {
+        final String outputDirectory;
+        if (directory.endsWith("/")) {
+            outputDirectory = directory.substring(0, directory.length() - 1) + "_compressed/";
+            LittleLog.createDirectory(outputDirectory);
+        } else {
+            System.out.println("Couldn't parse directory: " + directory + "\nmissing ending \"/\"");
+            return;
+        }
+
         final ArrayList<String> files = this.getAllFiles(directory);
+        String[] split;
         for (final String f : files) {
-            this.compress(directory + f);
+            split = f.split("\\.");
+            if (split.length == 2) {
+                split = split[0].split("\\/");
+                if (split.length > 0) {
+                    final String name = split[split.length - 1];
+                    this.compress(f, outputDirectory + name + ".succinct");
+                } else {
+                    System.out.println("Couldn't parse file: " + f);
+                }
+            } else {
+                System.out.println("Couldn't parse file: " + f);
+            }
         }
     }
 
-//
+    //
 //    public void succinctTest(final String filename) {
 //        final String inputFile = "logfiles/" + filename;
 //        String datetime = java.time.LocalDate.now().toString() + "-" + java.time.LocalTime.now().toString().split(":")[0];
@@ -106,17 +130,6 @@ public class LittleLog {
 //        succinctLog.writeToFile(outputFile);
 //        endTime = System.currentTimeMillis();
 //        System.out.println("Succinct File Write To Disk Time: " + Long.toString(endTime - startTime) + " ms\n");
-//    }
-//
-//    public static void createDirectory(final String pathname) {
-//        final File theDir = new File(pathname);
-//        if (!theDir.exists()) {
-//            try {
-//                theDir.mkdirs();
-//            } catch (final SecurityException se) {
-//                se.printStackTrace();
-//            }
-//        }
 //    }
 }
 

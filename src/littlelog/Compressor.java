@@ -1,4 +1,4 @@
-package succinct;
+package littlelog;
 
 import edu.berkeley.cs.succinct.SuccinctCore;
 import edu.berkeley.cs.succinct.buffers.SuccinctFileBuffer;
@@ -34,7 +34,7 @@ public class Compressor {
         final String type = "text-file";
 
         final long start = System.currentTimeMillis();
-        SuccinctCore.LOG.setLevel(Level.OFF);
+        SuccinctCore.LOG.setLevel(Level.ALL);
         byte var8 = -1;
         switch (type.hashCode()) {
             case -1559206968:
@@ -98,7 +98,7 @@ public class Compressor {
         }
 
         final long end = System.currentTimeMillis();
-        System.out.println("Time to construct: " + (end - start) / 1000L + "s");
+        System.out.println(outputpath + " : " + (end - start) / 1000L + "s");
     }
 
     private static char[] readTextFile(final File file) throws IOException {
