@@ -34,7 +34,7 @@ public class Compressor {
         final String type = "text-file";
 
         final long start = System.currentTimeMillis();
-        SuccinctCore.LOG.setLevel(Level.ALL);
+        SuccinctCore.LOG.setLevel(Level.OFF);
         byte var8 = -1;
         switch (type.hashCode()) {
             case -1559206968:
