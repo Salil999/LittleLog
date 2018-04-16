@@ -70,7 +70,7 @@ public class Sharder {
 
 			// Make sure we keep appending to the chunk
 			final FileWriter writer = new FileWriter(shardedChunk, true);
-			writer.write(line);
+			writer.write(line + '\n');
 			writer.close();
 
 			// Update the chunk number if we hit the max chunk size for the current chunk number
