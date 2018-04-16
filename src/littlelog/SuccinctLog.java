@@ -45,7 +45,7 @@ public class SuccinctLog {
             for (final RegExMatch result : chunkResults) {
                 System.out.println(this.extractLine(result.getOffset()));
             }
-            System.out.println("Result size = " + chunkResults.size());
+//            System.out.println("Result size = " + chunkResults.size());
         } catch (final RegExParsingException e) {
             System.err.println("Could not parse regular expression: [" + query + "]: " + e.getMessage());
         }
