@@ -1,5 +1,7 @@
 package littlelog;
 
+import java.io.File;
+
 public class Main {
     public static void main(final String[] args) {
 //        if (args.length == 1) {
@@ -10,12 +12,20 @@ public class Main {
 //            System.out.println("Parameters: [input-directory-to-compress]");
 //        }
 
-        if (args.length == 2) {
+        if (args.length == 3) {
             final LittleLog littleLog = new LittleLog(10);
-            littleLog.query(args[1], args[0]);
+
+            if (args[0].equals("grep")) {
+                littleLog.query(args[2], new File(args[1]));
+            } else if (args[0].equals("count")) {
+                littleLog.count(args[2], new File(args[1]));
+            } else {
+                System.out.println("Usage: ./[count-grep] [file-directory] [query]");
+            }
+
             littleLog.shutdown();
         } else {
-            System.out.println("Parameters: [input-directory-to-query] [query]");
+            System.out.println("Usage: ./[count-grep] [file-directory] [query]");
         }
     }
 }

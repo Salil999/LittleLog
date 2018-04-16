@@ -43,6 +43,7 @@ public class SuccinctLog {
             final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
             final Set<RegExMatch> chunkResults = succinctRegEx.compute();
             for (final RegExMatch result : chunkResults) {
+//                this.extractLine(result.getOffset());
                 System.out.println(this.extractLine(result.getOffset()));
             }
 //            System.out.println("Result size = " + chunkResults.size());
@@ -55,10 +56,11 @@ public class SuccinctLog {
         final StringBuilder line = new StringBuilder();
         String extracted;
         Long offset = originalOffset;
-        final Integer shift = 10;
+        final Integer shift = 2;
         while (true) {
-            if (offset <= this.fileSize - shift) {
-                line.append(this.extract(offset, toIntExact(this.fileSize - offset)));
+            if (offset >= this.fileSize - shift) {
+                final int length = toIntExact(this.fileSize - offset);
+                line.append(this.extract(offset, length));
                 break;
             }
             extracted = this.extract(offset, shift);
@@ -72,6 +74,7 @@ public class SuccinctLog {
                 line.append(extracted);
                 offset += shift;
             }
+            //TODO make succinct line class with string, start and end indeces in file, use to compare to previous succinct line, implement comparable and make a set out of them to get unique ones
         }
         offset = originalOffset - shift;
         while (true) {
