@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 public class LittleLog {
     ExecutorService pool;
@@ -31,21 +32,25 @@ public class LittleLog {
         this.pool = Executors.newFixedThreadPool(nThreads);
     }
 
-    public void compress(final String inputFilepath, final String outputFilepath) {
+    public void compress(final File input, final File output) {
+        this.compress(input.getAbsolutePath(), output.getAbsolutePath());
+    }
+
+    private void compress(final String inputFilePath, final String outputFilePath) {
         try {
-            final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, inputFilepath, outputFilepath, "");
+            final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, inputFilePath, outputFilePath, "");
             this.pool.execute(succinctTask);
         } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void count(final String query, final String directory) {
-        this.runSuccinctTask(SuccinctTaskType.COUNT, directory, query);
+    public void count(final String query, final File file) {
+        this.runSuccinctTask(SuccinctTaskType.COUNT, file.getAbsolutePath(), Pattern.compile(query).pattern());
     }
 
-    public void query(final String query, final String directory) {
-        this.runSuccinctTask(SuccinctTaskType.QUERY, directory, query);
+    public void query(final String query, final File file) {
+        this.runSuccinctTask(SuccinctTaskType.QUERY, file.getAbsolutePath(), Pattern.compile(query).pattern());
     }
 
     private void runSuccinctTask(final SuccinctTaskType succinctTaskType, final String directory, final String query) {
@@ -84,17 +89,17 @@ public class LittleLog {
         }
     }
 
-    public void compressDirectory(final String directory) {
-        final String outputDirectory;
-        if (directory.endsWith("/")) {
-            outputDirectory = directory.substring(0, directory.length() - 1) + "_compressed/";
-            LittleLog.createDirectory(outputDirectory);
-        } else {
-            System.out.println("Couldn't parse directory: " + directory + "\nmissing ending \"/\"");
+    public void compressDirectory(final File directory) {
+        if (!directory.isDirectory()) {
+            System.out.println(directory.getName() + " is not a directory");
             return;
         }
+        System.out.println(directory.getAbsolutePath());
 
-        final ArrayList<String> files = this.getAllFiles(directory);
+        final String outputDirectory = directory.getAbsolutePath() + "_compressed/";
+        LittleLog.createDirectory(outputDirectory);
+
+        final ArrayList<String> files = this.getAllFiles(directory.getAbsolutePath());
         String[] split;
         for (final String f : files) {
             split = f.split("\\.");
