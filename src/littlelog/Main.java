@@ -1,21 +1,19 @@
 package littlelog;
 
-public class Main {
-    public static void main(final String[] args) {
-//        if (args.length == 1) {
-//            final LittleLog littleLog = new LittleLog();
-////            littleLog.compressDirectory(args[0]);
-//            littleLog.shutdown();
-//        } else {
-//            System.out.println("Parameters: [input-directory-to-compress]");
-//        }
+import file.Sharder;
 
-        if (args.length == 2) {
-            final LittleLog littleLog = new LittleLog(10);
-            littleLog.query(args[1], args[0]);
-            littleLog.shutdown();
-        } else {
-            System.out.println("Parameters: [input-directory-to-query] [query]");
+import java.io.File;
+import java.io.IOException;
+
+public class Main {
+    public static void main(final String[] args) throws IOException {
+        for (final String arg : args) {
+            System.out.println(arg);
         }
+        final File input = new File(args[0]);
+        final File output = new File(args[1]);
+        final Sharder sharder = new Sharder(input, output);
+
+        sharder.shardDirectory();
     }
 }

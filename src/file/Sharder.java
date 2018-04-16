@@ -1,12 +1,8 @@
-package ingestion;
+package file;
 
 import java.io.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-/**
- * This class assumes
- */
 
 public class Sharder {
 
@@ -49,16 +45,13 @@ public class Sharder {
 			final String fileNoExtension = getFilePathWithoutExtension(file);
 			final File outputDirectoryWithFilename = new File(Sharder.this.destinationDirectory + "/" + fileNoExtension);
 			outputDirectoryWithFilename.mkdirs();
-			this.pool.execute(new Runnable() {
-				@Override
-				public void run() {
-					// Shard the file once the directory has been created
-					try {
-						Sharder.this.shardFile(file, outputDirectoryWithFilename, fileNoExtension);
-					} catch (final IOException e) {
-						e.printStackTrace();
-						System.err.println("Sharding failed for file: " + file.getAbsolutePath());
-					}
+			this.pool.execute(() -> {
+				// Shard the file once the directory has been created
+				try {
+					Sharder.this.shardFile(file, outputDirectoryWithFilename, fileNoExtension);
+				} catch (final IOException e) {
+					e.printStackTrace();
+					System.err.println("Sharding failed for file: " + file.getAbsolutePath());
 				}
 			});
 		}
