@@ -30,26 +30,6 @@ public class Sharder {
 		this(chunkSize, 5, sourceDirectory, destinationDirectory);
 	}
 
-	public void shardDirectory() {
-		for (final File file : this.sourceDirectory.listFiles()) {
-			// Create the output directory for the current file
-			final String fileNoExtension = Sharder.getFilePathWithoutExtension(file);
-			final File outputDirectoryWithFilename = new File(Sharder.this.destinationDirectory + "/" + fileNoExtension);
-			outputDirectoryWithFilename.mkdirs();
-			this.pool.execute(() -> {
-				// Shard the file once the directory has been created
-				try {
-                    System.out.println("Sharding " + file.getName());
-					Sharder.this.shardFile(file, outputDirectoryWithFilename, fileNoExtension);
-				} catch (final IOException e) {
-					e.printStackTrace();
-					System.err.println("Sharding failed for file: " + file.getAbsolutePath());
-				}
-			});
-		}
-        this.pool.shutdown();
-	}
-
 	public static String getFilePathWithoutExtension(final File file) {
 		final String fileName = file.getName();
 		final int position = fileName.lastIndexOf('.');
@@ -59,11 +39,46 @@ public class Sharder {
 		return fileName;
 	}
 
+	private void deleteIfExists(final File directory) {
+		final File[] allContents = directory.listFiles();
+		if (allContents != null) {
+			for (final File file : allContents) {
+				deleteIfExists(file);
+			}
+		}
+		directory.delete();
+	}
+
+	public void shardDirectory() {
+		for (final File file : this.sourceDirectory.listFiles()) {
+			// Create the output directory for the current file
+			final String fileNoExtension = Sharder.getFilePathWithoutExtension(file);
+			final File outputDirectoryWithFilename = new File(Sharder.this.destinationDirectory + "/" + fileNoExtension);
+
+			this.deleteIfExists(outputDirectoryWithFilename);
+			outputDirectoryWithFilename.mkdirs();
+
+			this.pool.execute(() -> {
+				// Shard the file once the directory has been created
+				try {
+                    System.out.println("Sharding " + file.getName());
+					Sharder.this.shardFile(file, outputDirectoryWithFilename, fileNoExtension);
+					System.out.println("Finished sharding " + file.getName());
+				} catch (final IOException e) {
+					e.printStackTrace();
+					System.err.println("Sharding failed for file: " + file.getAbsolutePath());
+				}
+			});
+		}
+        this.pool.shutdown();
+	}
+
 	public void shardFile(final File fileToShard, final File specificFileOutputDirectory, final String fileName) throws
 			IOException {
 		final BufferedReader reader = new BufferedReader(new FileReader(fileToShard));
 		String line;
 		int chunkNumber = 0;
+		System.out.println("Creating chunk 0");
 		while ((line = reader.readLine()) != null) {
 			// This is the file we're going to write to - based on the current chunk number
 			final File shardedChunk = new File(specificFileOutputDirectory.getAbsolutePath() + "/"
@@ -78,9 +93,9 @@ public class Sharder {
 			// Update the chunk number if we hit the max chunk size for the current chunk number
 			if (shardedChunk.length() > this.chunkSize) {
 				chunkNumber++;
+				System.out.println("Creating chunk " + chunkNumber);
 			}
 		}
-        System.out.println("Finished sharding " + fileToShard.getName());
 	}
 
 	public double getChunkSize() {
