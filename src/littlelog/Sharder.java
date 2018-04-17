@@ -30,7 +30,7 @@ public class Sharder {
 		this(chunkSize, 5, sourceDirectory, destinationDirectory);
 	}
 
-	public void shardDirectory() throws IOException {
+	public void shardDirectory() {
 		for (final File file : this.sourceDirectory.listFiles()) {
 			// Create the output directory for the current file
 			final String fileNoExtension = Sharder.getFilePathWithoutExtension(file);

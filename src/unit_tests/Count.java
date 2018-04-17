@@ -11,7 +11,7 @@ public class Count {
             littleLog.count(args[0], new File(args[1]));
             littleLog.shutdown();
         } else {
-            System.out.println("Usage: ./count.sh [query] [file-directory]");
+            System.out.println("usage: ./count.sh [query] [file-directory]");
         }
     }
 }

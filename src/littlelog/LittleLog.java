@@ -95,7 +95,7 @@ public class LittleLog {
 
     public void compressDirectory(final File directory) {
         if (!directory.isDirectory()) {
-            System.out.println("Usage: [directory]");
+            System.out.println("usage: [directory]");
             return;
         }
         System.out.println("input: " + directory.getAbsolutePath());

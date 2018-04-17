@@ -11,7 +11,7 @@ public class Compress {
             littleLog.compressDirectory(new File(args[0]));
             littleLog.shutdown();
         } else {
-            System.out.println("Usage: [directory]");
+            System.out.println("usage: [directory]");
         }
     }
 }

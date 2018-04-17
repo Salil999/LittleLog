@@ -11,7 +11,7 @@ public class Grep {
             littleLog.query(args[0], new File(args[1]));
             littleLog.shutdown();
         } else {
-            System.out.println("Usage: ./grep.sh [query] [file-directory]");
+            System.out.println("usage: ./grep.sh [query] [file-directory]");
         }
     }
 }
