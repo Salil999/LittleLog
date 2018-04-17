@@ -15,7 +15,7 @@ public class Sharder {
 	public Sharder(final File sourceDirectory, final File destinationDirectory) {
 		// TODO: We need to find the "optimal" value for tuning and set that to be the default
 		// For now, assume 50MB - will change for future commits
-		this(50.0, 5, sourceDirectory, destinationDirectory);
+		this(100.0, 5, sourceDirectory, destinationDirectory);
 	}
 
 	public Sharder(final double chunkSize, final File sourceDirectory, final File destinationDirectory) {
@@ -55,6 +55,7 @@ public class Sharder {
 				}
 			});
 		}
+		this.pool.shutdown();
 	}
 
 	public void shardFile(final File fileToShard, final File specificFileOutputDirectory, final String fileName) throws
