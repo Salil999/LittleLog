@@ -39,7 +39,37 @@ public class Sharder {
 		return fileName;
 	}
 
-	private void deleteIfExists(final File directory) {
+	public static void shardFile(final File fileToShard, final double chunkSize) {
+		int chunkNumber = 0;
+		System.out.println("Sharding " + fileToShard.getName());
+		System.out.println("Creating chunk 0");
+		final String fileName = getFilePathWithoutExtension(fileToShard);
+
+		final File pathname = new File(fileToShard.getParent() + "/" + fileName + "_log/");
+		System.out.println(pathname);
+		deleteIfExists(pathname);
+		pathname.mkdirs();
+
+		try {
+			final BufferedReader reader = new BufferedReader(new FileReader(fileToShard));
+			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+				final File shardedChunk = new File(pathname.getAbsolutePath() + "/"
+						+ fileName + "_" + chunkNumber + ".log");
+				final FileWriter writer = new FileWriter(shardedChunk, true);
+				writer.write(line + '\n');
+				writer.close();
+
+				if (shardedChunk.length() > chunkSize * Sharder.ONE_MB) {
+					chunkNumber++;
+					System.out.println("Creating chunk " + chunkNumber);
+				}
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void deleteIfExists(final File directory) {
 		final File[] allContents = directory.listFiles();
 		if (allContents != null) {
 			for (final File file : allContents) {
@@ -55,7 +85,7 @@ public class Sharder {
 			final String fileNoExtension = Sharder.getFilePathWithoutExtension(file);
 			final File outputDirectoryWithFilename = new File(Sharder.this.destinationDirectory + "/" + fileNoExtension);
 
-			this.deleteIfExists(outputDirectoryWithFilename);
+			deleteIfExists(outputDirectoryWithFilename);
 			outputDirectoryWithFilename.mkdirs();
 
 			this.pool.execute(() -> {
