@@ -76,11 +76,10 @@ public class SuccinctLog {
             }
             extracted = this.extract(offset, shift);
             if (extracted.contains("\n")) {
-                final String[] split = extracted.split("\\\n");
-                if (split.length > 0) {
-                    line.append(split[0]);
-                    offset += split[0].length();
-                }
+                final int index = extracted.indexOf("\n");
+                final String substring = extracted.substring(0, index);
+                line.append(substring);
+                offset += substring.length();
                 break;
             } else {
                 line.append(extracted);
@@ -98,9 +97,11 @@ public class SuccinctLog {
             }
             extracted = this.extract(offset, shift);
             if (extracted.contains("\n")) {
-                final String[] split = extracted.split("\\\n");
-                if (split.length == 2) {
-                    line.insert(0, split[1]);
+                final int index = extracted.indexOf("\n");
+                if (index < extracted.length()) {
+                    final String substring = extracted.substring(index + 1);
+                    line.append(substring);
+                    offset += substring.length();
                 }
                 break;
             } else {

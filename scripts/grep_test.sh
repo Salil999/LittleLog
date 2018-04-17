@@ -5,7 +5,8 @@ if [ -z "$1" ]
     echo "usage: ./grep_test.sh  [query]"
 else
     echo "succinct results count:"
-    ./grep.sh $1 logfiles/test_compressed/ | wc -l
+    ./grep.sh $1 logfiles/test_sharded/input1_compressed | wc -l
+    ./grep.sh $1 logfiles/test_sharded/input2_compressed | wc -l
 
     echo ""
     echo ""
