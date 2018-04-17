@@ -78,6 +78,10 @@ public class LittleLog {
 
     public void listf(final String directoryName, final ArrayList<String> files) {
         final File directory = new File(directoryName);
+        if (!directory.isDirectory()) {
+            System.out.println(directoryName + " is not a directory");
+            return;
+        }
 
         final File[] fList = directory.listFiles();
         for (final File file : fList) {
@@ -91,10 +95,10 @@ public class LittleLog {
 
     public void compressDirectory(final File directory) {
         if (!directory.isDirectory()) {
-            System.out.println(directory.getName() + " is not a directory");
+            System.out.println("Usage: [directory]");
             return;
         }
-        System.out.println(directory.getAbsolutePath());
+        System.out.println("input: " + directory.getAbsolutePath());
 
         final String outputDirectory = directory.getAbsolutePath() + "_compressed/";
         LittleLog.createDirectory(outputDirectory);

@@ -5,6 +5,7 @@ import edu.berkeley.cs.succinct.regex.RegExMatch;
 import edu.berkeley.cs.succinct.regex.SuccinctRegEx;
 import edu.berkeley.cs.succinct.regex.parser.RegExParsingException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -13,9 +14,12 @@ import static java.lang.Math.toIntExact;
 
 public class SuccinctLog {
     private final SuccinctFileBuffer succinctFileBuffer;
+    private final String filename;
     private Integer fileSize;
 
     public SuccinctLog(final String filepath) {
+        final File file = new File(filepath);
+        this.filename = file.getName();
         this.fileSize = 0;
         this.succinctFileBuffer = this.readFromFile(filepath);
     }
@@ -42,9 +46,15 @@ public class SuccinctLog {
         try {
             final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
             final Set<RegExMatch> chunkResults = succinctRegEx.compute();
+            ExtractedLine extractedLine;
+            Long lastLineEnd = new Long(0);
             for (final RegExMatch result : chunkResults) {
 //                this.extractLine(result.getOffset());
-                System.out.println(this.extractLine(result.getOffset()));
+                extractedLine = this.extractLine(result.getOffset());
+                if (extractedLine.lineEndIndex > lastLineEnd) {
+                    System.out.println(extractedLine.text);
+                    lastLineEnd = extractedLine.lineEndIndex;
+                }
             }
 //            System.out.println("Result size = " + chunkResults.size());
         } catch (final RegExParsingException e) {
@@ -52,11 +62,12 @@ public class SuccinctLog {
         }
     }
 
-    public String extractLine(final Long originalOffset) {
+    public ExtractedLine extractLine(final Long originalOffset) {
         final StringBuilder line = new StringBuilder();
         String extracted;
         Long offset = originalOffset;
-        final Integer shift = 2;
+        final Integer shift = 30;
+
         while (true) {
             if (offset >= this.fileSize - shift) {
                 final int length = toIntExact(this.fileSize - offset);
@@ -68,14 +79,17 @@ public class SuccinctLog {
                 final String[] split = extracted.split("\\\n");
                 if (split.length > 0) {
                     line.append(split[0]);
+                    offset += split[0].length();
                 }
                 break;
             } else {
                 line.append(extracted);
                 offset += shift;
             }
-            //TODO make succinct line class with string, start and end indeces in file, use to compare to previous succinct line, implement comparable and make a set out of them to get unique ones
         }
+
+        final Long lineEnd = offset;
+
         offset = originalOffset - shift;
         while (true) {
             if (offset < 0) {
@@ -94,7 +108,8 @@ public class SuccinctLog {
                 offset -= shift;
             }
         }
-        return line.toString();
+
+        return new ExtractedLine(line.toString(), lineEnd);
     }
 
     public String extract(final Long offset, final Integer length) {
@@ -103,7 +118,7 @@ public class SuccinctLog {
     }
 
     public void count(final String query) {
-        System.out.println("Count[" + query + "] = " + this.succinctFileBuffer.count(query.getBytes()));
+        System.out.println(this.filename + ": count[" + query + "] = " + this.succinctFileBuffer.count(query.getBytes()));
     }
 
 }

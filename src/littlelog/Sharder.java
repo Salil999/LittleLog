@@ -1,4 +1,4 @@
-package file;
+package littlelog;
 
 import java.io.*;
 import java.util.concurrent.ExecutorService;
@@ -18,31 +18,22 @@ public class Sharder {
 		this(50.0, 5, sourceDirectory, destinationDirectory);
 	}
 
-	public Sharder(final double chunkSize, final File sourceDirectory, final File destinationDirectory) {
-		this(chunkSize, 5, sourceDirectory, destinationDirectory);
-	}
-
 	public Sharder(final double chunkSize, final int maxThreads, final File sourceDirectory, final File
 			destinationDirectory) {
-		this.chunkSize = chunkSize * ONE_MB;
+		this.chunkSize = chunkSize * Sharder.ONE_MB;
 		this.pool = Executors.newFixedThreadPool(maxThreads);
 		this.sourceDirectory = sourceDirectory;
 		this.destinationDirectory = destinationDirectory;
 	}
 
-	public static String getFilePathWithoutExtension(final File file) {
-		final String fileName = file.getName();
-		final int position = fileName.lastIndexOf('.');
-		if (position > 0) {
-			return fileName.substring(0, position);
-		}
-		return fileName;
+	public Sharder(final double chunkSize, final File sourceDirectory, final File destinationDirectory) {
+		this(chunkSize, 5, sourceDirectory, destinationDirectory);
 	}
 
 	public void shardDirectory() throws IOException {
 		for (final File file : this.sourceDirectory.listFiles()) {
 			// Create the output directory for the current file
-			final String fileNoExtension = getFilePathWithoutExtension(file);
+			final String fileNoExtension = Sharder.getFilePathWithoutExtension(file);
 			final File outputDirectoryWithFilename = new File(Sharder.this.destinationDirectory + "/" + fileNoExtension);
 			outputDirectoryWithFilename.mkdirs();
 			this.pool.execute(() -> {
@@ -55,6 +46,15 @@ public class Sharder {
 				}
 			});
 		}
+	}
+
+	public static String getFilePathWithoutExtension(final File file) {
+		final String fileName = file.getName();
+		final int position = fileName.lastIndexOf('.');
+		if (position > 0) {
+			return fileName.substring(0, position);
+		}
+		return fileName;
 	}
 
 	public void shardFile(final File fileToShard, final File specificFileOutputDirectory, final String fileName) throws

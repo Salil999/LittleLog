@@ -98,7 +98,7 @@ public class Compressor {
         }
 
         final long end = System.currentTimeMillis();
-        System.out.println(outputpath + " : " + (end - start) / 1000L + "s");
+        System.out.println("output: " + outputpath + " : " + (end - start) / 1000L + "s");
     }
 
     private static char[] readTextFile(final File file) throws IOException {

@@ -1,4 +1,4 @@
-package littlelog;
+package parser;
 
 import java.io.PrintStream;
 import java.time.LocalDate;
@@ -29,19 +29,19 @@ public final class Logger {
 	private PrintStream printStream;
 
 	/**
+	 * Constructs the object with the system default PrintStream.
+	 */
+	public Logger() {
+		this(System.out);
+	}
+
+	/**
 	 * Constructs the object with a custom PrintStream.
 	 *
 	 * @param ps PrintStream object to be written to
 	 */
 	public Logger(final PrintStream ps) {
 		this.printStream = ps;
-	}
-
-	/**
-	 * Constructs the object with the system default PrintStream.
-	 */
-	public Logger() {
-		this(System.out);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public final class Logger {
 	 *             is the message in the log
 	 */
 	public void log(final String... args) {
-		this.printStream.println(formatMessage(args));
+		this.printStream.println(this.formatMessage(args));
 	}
 
 	/**
