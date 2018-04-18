@@ -7,14 +7,28 @@ import java.io.File;
 public class Compress {
     public static void main(final String[] args) {
 
-        final LittleLog littleLog = new LittleLog();
-        if (args.length == 1) {
-            littleLog.compressDirectory(new File(args[0]));
-        } else if (args.length == 2) {
-            littleLog.compressDirectory(new File(args[0]), new File(args[1]));
+
+        if (args.length == 2) {
+            final double numThreads = Integer.valueOf(args[0]);
+            final LittleLog littleLog = new LittleLog(numThreads);
+
+            final File input = new File(args[1]);
+
+            littleLog.compressDirectory(input);
+            littleLog.shutdown();
+
+        } else if (args.length == 3) {
+            final double numThreads = Integer.valueOf(args[0]);
+            final LittleLog littleLog = new LittleLog(numThreads);
+
+            final File input = new File(args[1]);
+            final File output = new File(args[2]);
+
+            littleLog.compressDirectory(input, output);
+            littleLog.shutdown();
+
         } else {
-            System.out.println("usage: [input-directory] <optional>[output-directory]");
+            System.out.println("usage ./compress.sh [num-threads] [input-directory] <optional>[output-directory]");
         }
-        littleLog.shutdown();
     }
 }

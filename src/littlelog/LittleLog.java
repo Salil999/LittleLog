@@ -140,7 +140,6 @@ public class LittleLog {
         }
 
         final ArrayList<File> files = this.getAllFiles(directory);
-        this.setThreadPoolSize(100);
         for (final File f : files) {
             this.pool.execute(() -> {
 //                System.out.println("compressing " + f.getName());
