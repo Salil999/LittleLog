@@ -6,12 +6,15 @@ import java.io.File;
 
 public class Compress {
     public static void main(final String[] args) {
+
+        final LittleLog littleLog = new LittleLog();
         if (args.length == 1) {
-            final LittleLog littleLog = new LittleLog();
             littleLog.compressDirectory(new File(args[0]));
-            littleLog.shutdown();
+        } else if (args.length == 2) {
+            littleLog.compressDirectory(new File(args[0]), new File(args[1]));
         } else {
-            System.out.println("usage: [directory]");
+            System.out.println("usage: [input-directory] <optional>[output-directory]");
         }
+        littleLog.shutdown();
     }
 }
