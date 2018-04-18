@@ -59,12 +59,8 @@ public class LittleLog {
     }
 
     private void compress(final String inputFilePath, final String outputFilePath) {
-        try {
-            final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, inputFilePath, outputFilePath, "");
-            this.pool.execute(succinctTask);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, inputFilePath, outputFilePath, "");
+        succinctTask.run();
     }
 
     public void count(final String query, final File file) {
@@ -115,26 +111,14 @@ public class LittleLog {
     }
 
     public void compressDirectory(final File directory) {
-        if (!directory.isDirectory()) {
-            System.out.println("usage: [directory]");
-            return;
-        }
-        System.out.println("input: " + directory.getAbsolutePath());
-
         final String output;
         try {
             output = directory.getCanonicalPath() + "_compressed/";
             LittleLog.createDirectory(output);
+            this.compressDirectory(directory, new File(output));
         } catch (final IOException e) {
             e.printStackTrace();
             return;
-        }
-
-        final ArrayList<File> files = this.getAllFiles(directory);
-        String name;
-        for (final File f : files) {
-            name = this.getFilePathWithoutExtension(f);
-            this.compress(f, new File(output + name + ".succinct"));
         }
     }
 
@@ -149,17 +133,20 @@ public class LittleLog {
         final String output;
         try {
             output = outputDirectory.getCanonicalPath();
-            System.out.println(outputDirectory.getCanonicalPath());
+//            System.out.println(outputDirectory.getCanonicalPath());
         } catch (final Exception e) {
             System.out.println("Couldn't generate output directory path");
             return;
         }
 
         final ArrayList<File> files = this.getAllFiles(directory);
-        String name;
+        this.setThreadPoolSize(100);
         for (final File f : files) {
-            name = this.getFilePathWithoutExtension(f);
-            this.compress(f, new File(output + "/" + name + ".succinct"));
+            this.pool.execute(() -> {
+//                System.out.println("compressing " + f.getName());
+                final String name = this.getFilePathWithoutExtension(f);
+                this.compress(f, new File(output + "/" + name + ".succinct"));
+            });
         }
     }
 
