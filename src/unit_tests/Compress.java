@@ -6,8 +6,6 @@ import java.io.File;
 
 public class Compress {
     public static void main(final String[] args) {
-
-
         if (args.length == 2) {
             final Integer numThreads = Integer.valueOf(args[0]);
             final LittleLog littleLog = new LittleLog(numThreads);

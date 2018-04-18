@@ -39,17 +39,6 @@ public class LittleLog {
         return fileName;
     }
 
-    private static void createDirectory(final String pathname) {
-        final File theDir = new File(pathname);
-        if (!theDir.exists()) {
-            try {
-                theDir.mkdirs();
-            } catch (final SecurityException se) {
-                se.printStackTrace();
-            }
-        }
-    }
-
     public void setThreadPoolSize(final Integer nThreads) {
         this.pool = Executors.newFixedThreadPool(nThreads);
     }
@@ -59,8 +48,12 @@ public class LittleLog {
     }
 
     private void compress(final String inputFilePath, final String outputFilePath) {
-        final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, inputFilePath, outputFilePath, "");
-        succinctTask.run();
+        try {
+            final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, inputFilePath, outputFilePath, "");
+            succinctTask.run();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void count(final String query, final File file) {
@@ -69,6 +62,8 @@ public class LittleLog {
 
     public void query(final String query, final File file) {
         this.runSuccinctTask(SuccinctTaskType.QUERY, file, Pattern.compile(query).pattern());
+
+        //TODO: create mini-terminal for littlelog to maintain highest-query-result-yiled succinct cache to improve query time
     }
 
     private void runSuccinctTask(final SuccinctTaskType succinctTaskType, final File directory, final String query) {
@@ -110,16 +105,36 @@ public class LittleLog {
         }
     }
 
-    public void compressDirectory(final File directory) {
-        final String output;
-        try {
-            output = directory.getCanonicalPath() + "_compressed/";
-            LittleLog.createDirectory(output);
-            this.compressDirectory(directory, new File(output));
-        } catch (final IOException e) {
-            e.printStackTrace();
+    public void compress(final File file) {
+        final File output = this.generateOutputDirectory(file);
+        if (output == null) {
             return;
         }
+
+
+    }
+
+    private File generateOutputDirectory(final File file) {
+        final File output;
+        try {
+            output = new File(file.getCanonicalPath());
+            if (!output.exists()) {
+                try {
+                    output.mkdirs();
+                } catch (final SecurityException se) {
+                    se.printStackTrace();
+                }
+            }
+            return output;
+
+        } catch (final IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public void compressDirectory(final File directory) {
+        final File output = new File(directory + "_compressed/");
+        this.compressDirectory(directory, output);
     }
 
     public void compressDirectory(final File directory, final File outputDirectory) {
@@ -129,35 +144,19 @@ public class LittleLog {
         }
         System.out.println("input: " + directory.getAbsolutePath());
 
-        LittleLog.createDirectory(outputDirectory.getAbsolutePath());
-        final String output;
-        try {
-            output = outputDirectory.getCanonicalPath();
-//            System.out.println(outputDirectory.getCanonicalPath());
-        } catch (final Exception e) {
-            System.out.println("Couldn't generate output directory path");
-            return;
-        }
-
+        final File output = this.generateOutputDirectory(outputDirectory);
         final ArrayList<File> files = this.getAllFiles(directory);
+
         for (final File f : files) {
             this.pool.execute(() -> {
-//                System.out.println("compressing " + f.getName());
+                try {
                 final String name = this.getFilePathWithoutExtension(f);
-                this.compress(f, new File(output + "/" + name + ".succinct"));
+                    this.compress(f, new File(output.getCanonicalPath() + "/" + name + ".succinct"));
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
             });
         }
     }
-
-
-//    public void compressLog(final File file) {
-//        if (!file.isFile()) {
-//            System.out.println("usage: [file]");
-//            return;
-//        }
-//        final Sharder sharder = new Sharder(this.chunkSize, )
-//    }
-
-
 }
 
