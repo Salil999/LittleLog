@@ -9,7 +9,7 @@ public class Compress {
 
 
         if (args.length == 2) {
-            final double numThreads = Integer.valueOf(args[0]);
+            final Integer numThreads = Integer.valueOf(args[0]);
             final LittleLog littleLog = new LittleLog(numThreads);
 
             final File input = new File(args[1]);
@@ -18,7 +18,7 @@ public class Compress {
             littleLog.shutdown();
 
         } else if (args.length == 3) {
-            final double numThreads = Integer.valueOf(args[0]);
+            final Integer numThreads = Integer.valueOf(args[0]);
             final LittleLog littleLog = new LittleLog(numThreads);
 
             final File input = new File(args[1]);
