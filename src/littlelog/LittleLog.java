@@ -109,7 +109,7 @@ public class LittleLog {
         Compressor.compress(input, output, shardSize);
     }
 
-    private File generateOutputDirectory(final File file) {
+    public File generateOutputDirectory(final File file) {
         final File output;
         try {
             output = new File(file.getCanonicalPath());
