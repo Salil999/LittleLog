@@ -7,7 +7,6 @@ import edu.berkeley.cs.succinct.util.SuccinctConfiguration;
 import edu.berkeley.cs.succinct.util.container.IntArrayList;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
 
@@ -15,14 +14,14 @@ public class Compressor {
     public Compressor() {
     }
 
-    public static void compressBuffer(final ByteBuffer byteBuffer, final String outputpath) throws IOException {
+    public static void compressBuffer(final byte[] bytes, final String outputpath) throws IOException {
         final FileOutputStream fos = new FileOutputStream(outputpath);
         final DataOutputStream os = new DataOutputStream(fos);
 
         final long start = System.currentTimeMillis();
         SuccinctCore.LOG.setLevel(Level.OFF);
 
-        SuccinctFileBuffer.construct(byteBuffer.array(), os, new SuccinctConfiguration());
+        SuccinctFileBuffer.construct(bytes, os, new SuccinctConfiguration());
 
         final long end = System.currentTimeMillis();
         System.out.println("output: " + outputpath + " : " + (end - start) / 1000L + "s");
