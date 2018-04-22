@@ -12,7 +12,7 @@ public class LittleLog {
     Double chunkSize;
 
     public LittleLog() {
-        this.pool = Executors.newFixedThreadPool(1);
+        this.pool = Executors.newFixedThreadPool(10);
         this.chunkSize = 100.0;
     }
 
@@ -39,22 +39,9 @@ public class LittleLog {
         return fileName;
     }
 
-    public void setThreadPoolSize(final Integer nThreads) {
-        this.pool = Executors.newFixedThreadPool(nThreads);
-    }
-
-    private void compress(final File input, final File output) {
-        this.compress(input.getAbsolutePath(), output.getAbsolutePath());
-    }
-
-    private void compress(final String inputFilePath, final String outputFilePath) {
-        try {
-            final SuccinctTask succinctTask = new SuccinctTask(SuccinctTaskType.COMPRESS, inputFilePath, outputFilePath, "");
-            succinctTask.run();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public void setThreadPoolSize(final Integer nThreads) {
+//        this.pool = Executors.newFixedThreadPool(nThreads);
+//    }
 
     public void count(final String query, final File file) {
         this.runSuccinctTask(SuccinctTaskType.COUNT, file, Pattern.compile(query).pattern());
@@ -89,7 +76,7 @@ public class LittleLog {
         return files;
     }
 
-    public void listf(final File directory, final ArrayList<File> files) {
+    private void listf(final File directory, final ArrayList<File> files) {
         if (!directory.isDirectory()) {
             System.out.println(directory.getName() + " is not a directory");
             return;
@@ -105,13 +92,21 @@ public class LittleLog {
         }
     }
 
-    public void compress(final File file) {
-        final File output = this.generateOutputDirectory(file);
-        if (output == null) {
-            return;
-        }
+    public void compress(final File input) {
+        Compressor.compress(input);
+    }
 
+    public void compress(final File input, final File output) {
+        Compressor.compress(input, output);
+    }
 
+    public void compress(final File input, final Integer shardSize) {
+        Compressor.compress(input, shardSize);
+
+    }
+
+    public void compress(final File input, final File output, final Integer shardSize) {
+        Compressor.compress(input, output, shardSize);
     }
 
     private File generateOutputDirectory(final File file) {
@@ -132,6 +127,7 @@ public class LittleLog {
             return null;
         }
     }
+
     public void compressDirectory(final File directory) {
         final File output = new File(directory + "_compressed/");
         this.compressDirectory(directory, output);
@@ -151,7 +147,7 @@ public class LittleLog {
             this.pool.execute(() -> {
                 try {
                 final String name = this.getFilePathWithoutExtension(f);
-                    this.compress(f, new File(output.getCanonicalPath() + "/" + name + ".succinct"));
+                    Compressor.compress(f, new File(output.getCanonicalPath() + "/" + name + ".succinct"));
                 } catch (final IOException e) {
                     e.printStackTrace();
                 }

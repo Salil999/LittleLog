@@ -5,12 +5,11 @@ if [ -z "$1" ]
     echo "usage: ./grep_test.sh  [query]"
 else
     echo "succinct results count:"
-    ./grep.sh $1 logfiles/test_sharded/input1_compressed | wc -l
-    ./grep.sh $1 logfiles/test_sharded/input2_compressed | wc -l
+    ./grep.sh $1 logfiles/access_compressed
 
     echo ""
     echo ""
 
     echo "grep results count:"
-    time grep      $1 ../src/logfiles/test/* | wc -l
+    time grep      $1 ../src/logfiles/access.log
 fi

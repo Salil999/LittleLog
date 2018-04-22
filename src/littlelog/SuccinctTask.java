@@ -17,10 +17,6 @@ public class SuccinctTask implements Runnable {
     public void run() {
         final SuccinctLog succinctLog;
         switch (this.succinctTaskType) {
-            case COMPRESS:
-                final Compressor compressor = new Compressor();
-                compressor.compress(this.inputFilepath, this.outputFilepath);
-                break;
             case COUNT:
                 succinctLog = new SuccinctLog(this.inputFilepath);
                 succinctLog.count(this.query);
