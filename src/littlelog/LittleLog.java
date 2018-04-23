@@ -41,11 +41,6 @@ public class LittleLog {
         return fileName;
     }
 
-//    public void setThreadPoolSize(final Integer nThreads) {
-//        this.pool = Executors.newFixedThreadPool(nThreads);
-//    }
-
-
     public void query(final String query, final File input) {
         final ArrayList<String> results = new ArrayList<>();
 
@@ -141,45 +136,7 @@ public class LittleLog {
             e.printStackTrace();
         }
     }
-
-//    public void count(final String query, final File file) {
-//        this.runSuccinctTask(SuccinctTaskType.COUNT, file, Pattern.compile(query).pattern());
-//    }
-
-//    public void query(final String query, final File file) {
-//        this.runSuccinctTask(SuccinctTaskType.QUERY, file, Pattern.compile(query).pattern());
-//
-//        //TODO: create mini-terminal for littlelog to maintain highest-query-result-yiled succinct cache to improve query time
-//    }
-
-//    private void runSuccinctTask(final SuccinctTaskType succinctTaskType, final File file, final String query) {
-//        if (file.isFile() && file.getName().endsWith(".succinct")) {
-//            final SuccinctTask succinctTask = new SuccinctTask(succinctTaskType, file.getAbsolutePath(), "", query);
-//            succinctTask.run();
-//        } else if (file.isDirectory()) {
-//            for (final File f : this.getAllFiles(file)) {
-//                if (f.getName().endsWith(".succinct")) {
-//                    this.pool.execute(() -> {
-//                        final SuccinctLog succinctLog = new SuccinctLog(file);
-//                        succinctLog.count(query);
-//                    });
-//
-////
-////                    try {
-////
-////                        final SuccinctTask succinctTask = new SuccinctTask(succinctTaskType, f.getAbsolutePath(), "", query);
-////                        this.pool.execute(succinctTask);
-////                    } catch (final Exception e) {
-////                        e.printStackTrace();
-////                    }
-//                }
-//            }
-//        }
-//    }
-
-    public void shutdown() {
-        this.pool.shutdown();
-    }
+    //TODO: create mini-terminal for littlelog to maintain highest-query-result-yiled succinct cache to improve query time
 
     private ArrayList<File> getAllFiles(final File directory) {
         final ArrayList<File> files = new ArrayList<>();
@@ -222,35 +179,31 @@ public class LittleLog {
         }
     }
 
-    public void compressDirectory(final File directory) {
-        final File output = new File(directory + "_compressed/");
-        this.compressDirectory(directory, output);
-    }
-
-    public void compressDirectory(final File directory, final File outputDirectory) {
-        if (!directory.isDirectory()) {
-            System.out.println("usage: [input-directory] [output-directory]");
-            return;
-        }
-        System.out.println("input: " + directory.getAbsolutePath());
-
-        final File output = this.generateOutputDirectory(outputDirectory);
-        final ArrayList<File> files = this.getAllFiles(directory);
-
-        for (final File f : files) {
-            this.pool.execute(() -> {
-                try {
-                final String name = this.getFilePathWithoutExtension(f);
-                    Compressor.compress(f, new File(output.getCanonicalPath() + "/" + name + ".succinct"));
-                } catch (final IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-    }
-
-    public void sortFiles() {
-
-    }
+//    public void compressDirectory(final File directory) {
+//        final File output = new File(directory + "_compressed/");
+//        this.compressDirectory(directory, output);
+//    }
+//
+//    private void compressDirectory(final File directory, final File outputDirectory) {
+//        if (!directory.isDirectory()) {
+//            System.out.println("usage: [input-directory] [output-directory]");
+//            return;
+//        }
+//        System.out.println("input: " + directory.getAbsolutePath());
+//
+//        final File output = this.generateOutputDirectory(outputDirectory);
+//        final ArrayList<File> files = this.getAllFiles(directory);
+//
+//        for (final File f : files) {
+//            this.pool.execute(() -> {
+//                try {
+//                final String name = this.getFilePathWithoutExtension(f);
+//                    Compressor.compress(f, new File(output.getCanonicalPath() + "/" + name + ".succinct"));
+//                } catch (final IOException e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//        }
+//    }
 }
 

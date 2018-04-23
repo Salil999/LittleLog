@@ -39,10 +39,6 @@ public class SuccinctLog {
         return succinctFileBuffer;
     }
 
-    public Integer getFileSize() {
-        return this.fileSize;
-    }
-
     public void query(final String query, final ArrayList<String> results, final Integer index, final Object lock) {
         try {
             final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
@@ -69,7 +65,7 @@ public class SuccinctLog {
         }
     }
 
-    public ExtractedLine extractLine(final Long originalOffset) {
+    private ExtractedLine extractLine(final Long originalOffset) {
         final StringBuilder line = new StringBuilder();
         String extracted;
         Long offset = originalOffset;
@@ -78,10 +74,11 @@ public class SuccinctLog {
         while (true) {
             if (offset >= this.fileSize - shift) {
                 final int length = toIntExact(this.fileSize - offset);
-                line.append(this.extract(offset, length));
+                line.append(this.succinctFileBuffer.extract(offset, length));
                 break;
             }
-            extracted = this.extract(offset, shift);
+
+            extracted = this.succinctFileBuffer.extract(offset, shift);
             if (extracted.contains("\n")) {
                 final int index = extracted.indexOf("\n");
                 final String substring = extracted.substring(0, index);
@@ -99,10 +96,11 @@ public class SuccinctLog {
         offset = originalOffset - shift;
         while (true) {
             if (offset < 0) {
-                line.append(this.extract(new Long(0), toIntExact(offset + shift)));
+                line.append(this.succinctFileBuffer.extract(0, toIntExact(offset + shift)));
                 break;
             }
-            extracted = this.extract(offset, shift);
+
+            extracted = this.succinctFileBuffer.extract(offset, shift);
             if (extracted.contains("\n")) {
                 final int index = extracted.indexOf("\n");
                 if (index < extracted.length()) {
@@ -120,11 +118,6 @@ public class SuccinctLog {
         return new ExtractedLine(line.toString(), lineEnd);
     }
 
-    public String extract(final Long offset, final Integer length) {
-        final String extracted = new String(this.succinctFileBuffer.extract(offset, length));
-        return extracted;
-    }
-
     public void query(final String query) {
         try {
             final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
@@ -132,14 +125,12 @@ public class SuccinctLog {
             ExtractedLine extractedLine;
             Long lastLineEnd = new Long(0);
             for (final RegExMatch result : chunkResults) {
-//                this.extractLine(result.getOffset());
                 extractedLine = this.extractLine(result.getOffset());
                 if (extractedLine.lineEndIndex > lastLineEnd) {
                     System.out.println(extractedLine.text);
                     lastLineEnd = extractedLine.lineEndIndex;
                 }
             }
-//            System.out.println("Result size = " + chunkResults.size());
         } catch (final RegExParsingException e) {
             System.err.println("Could not parse regular expression: [" + query + "]: " + e.getMessage());
         }
