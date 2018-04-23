@@ -3,9 +3,11 @@ package littlelog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 
 public class LittleLog {
     ExecutorService pool;
@@ -43,28 +45,137 @@ public class LittleLog {
 //        this.pool = Executors.newFixedThreadPool(nThreads);
 //    }
 
-    public void count(final String query, final File file) {
-        this.runSuccinctTask(SuccinctTaskType.COUNT, file, Pattern.compile(query).pattern());
-    }
 
-    public void query(final String query, final File file) {
-        this.runSuccinctTask(SuccinctTaskType.QUERY, file, Pattern.compile(query).pattern());
+    public void query(final String query, final File input) {
+        final ArrayList<String> results = new ArrayList<>();
 
-        //TODO: create mini-terminal for littlelog to maintain highest-query-result-yiled succinct cache to improve query time
-    }
+        if (input.isFile() && input.getName().endsWith(".succinct")) {
 
-    private void runSuccinctTask(final SuccinctTaskType succinctTaskType, final File directory, final String query) {
-        for (final File file : this.getAllFiles(directory)) {
-            if (file.getName().endsWith(".succinct")) {
-                try {
-                    final SuccinctTask succinctTask = new SuccinctTask(succinctTaskType, file.getAbsolutePath(), "", query);
-                    this.pool.execute(succinctTask);
-                } catch (final Exception e) {
-                    e.printStackTrace();
+            final SuccinctLog succinctLog = new SuccinctLog(input.getAbsolutePath());
+            succinctLog.query(query);
+
+        } else if (input.isDirectory()) {
+            final ArrayList<File> files = this.getAllFiles(input);
+
+            Collections.sort(files, new Comparator<File>() {
+                @Override
+                public int compare(final File o1, final File o2) {
+                    final int n1 = this.extractNumber(o1.getName());
+                    final int n2 = this.extractNumber(o2.getName());
+                    return n1 - n2;
+                }
+
+                private int extractNumber(final String name) {
+                    int i = 0;
+                    try {
+                        final int s = name.indexOf('_') + 1;
+                        final int e = name.lastIndexOf('.');
+                        final String number = name.substring(s, e);
+                        i = Integer.parseInt(number);
+                    } catch (final Exception e) {
+                        i = 0; // if filename does not match the format then default to 0
+                    }
+                    return i;
+                }
+            });
+
+            for (int i = 0; i < files.size(); i++) {
+                results.add("");
+            }
+
+            final Object lock = new Object();
+
+            for (int i = 0; i < files.size(); i++) {
+                final File file = files.get(i);
+                final Integer index = i;
+                if (file.getName().endsWith(".succinct")) {
+                    this.pool.execute(() -> {
+                        final SuccinctLog succinctLog = new SuccinctLog(file.getAbsolutePath());
+                        succinctLog.query(query, results, index, lock);
+                    });
                 }
             }
         }
+        this.pool.shutdown();
+
+        try {
+            while (!this.pool.awaitTermination(50, TimeUnit.MILLISECONDS)) {
+            }
+            final StringBuilder sb = new StringBuilder();
+            for (final String result : results) {
+                sb.append(result);
+            }
+            System.out.println(sb.toString().trim());
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
     }
+
+    public void count(final String query, final File input) {
+        final long[] total = {0};
+
+        if (input.isFile() && input.getName().endsWith(".succinct")) {
+            final SuccinctLog succinctLog = new SuccinctLog(input.getAbsolutePath());
+            succinctLog.count(query);
+
+        } else if (input.isDirectory()) {
+            final Object lock = new Object();
+
+            for (final File file : this.getAllFiles(input)) {
+                if (file.getName().endsWith(".succinct")) {
+                    this.pool.execute(() -> {
+                        final SuccinctLog succinctLog = new SuccinctLog(file.getAbsolutePath());
+                        succinctLog.count(query, total, lock);
+                    });
+                }
+            }
+        }
+
+        this.pool.shutdown();
+
+        try {
+            while (!this.pool.awaitTermination(50, TimeUnit.MILLISECONDS)) {
+            }
+            System.out.println(total[0]);
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    public void count(final String query, final File file) {
+//        this.runSuccinctTask(SuccinctTaskType.COUNT, file, Pattern.compile(query).pattern());
+//    }
+
+//    public void query(final String query, final File file) {
+//        this.runSuccinctTask(SuccinctTaskType.QUERY, file, Pattern.compile(query).pattern());
+//
+//        //TODO: create mini-terminal for littlelog to maintain highest-query-result-yiled succinct cache to improve query time
+//    }
+
+//    private void runSuccinctTask(final SuccinctTaskType succinctTaskType, final File file, final String query) {
+//        if (file.isFile() && file.getName().endsWith(".succinct")) {
+//            final SuccinctTask succinctTask = new SuccinctTask(succinctTaskType, file.getAbsolutePath(), "", query);
+//            succinctTask.run();
+//        } else if (file.isDirectory()) {
+//            for (final File f : this.getAllFiles(file)) {
+//                if (f.getName().endsWith(".succinct")) {
+//                    this.pool.execute(() -> {
+//                        final SuccinctLog succinctLog = new SuccinctLog(file);
+//                        succinctLog.count(query);
+//                    });
+//
+////
+////                    try {
+////
+////                        final SuccinctTask succinctTask = new SuccinctTask(succinctTaskType, f.getAbsolutePath(), "", query);
+////                        this.pool.execute(succinctTask);
+////                    } catch (final Exception e) {
+////                        e.printStackTrace();
+////                    }
+//                }
+//            }
+//        }
+//    }
 
     public void shutdown() {
         this.pool.shutdown();
@@ -92,24 +203,7 @@ public class LittleLog {
         }
     }
 
-    public void compress(final File input) {
-        Compressor.compress(input);
-    }
-
-    public void compress(final File input, final File output) {
-        Compressor.compress(input, output);
-    }
-
-    public void compress(final File input, final Integer shardSize) {
-        Compressor.compress(input, shardSize);
-
-    }
-
-    public void compress(final File input, final File output, final Integer shardSize) {
-        Compressor.compress(input, output, shardSize);
-    }
-
-    public File generateOutputDirectory(final File file) {
+    private File generateOutputDirectory(final File file) {
         final File output;
         try {
             output = new File(file.getCanonicalPath());
@@ -153,6 +247,10 @@ public class LittleLog {
                 }
             });
         }
+    }
+
+    public void sortFiles() {
+
     }
 }
 

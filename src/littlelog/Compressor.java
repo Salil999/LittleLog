@@ -141,13 +141,13 @@ public class Compressor {
         }
     }
 
-    public static void compress(final File input, final Integer shardSize) {
+    public static void compress(final File input, final Integer shardSize, final Integer numThreads) {
         final File output = new File(input.getParent() + "/" + Compressor.getFilePathWithoutExtension(input) + "_compressed/");
-        Compressor.compress(input, output, shardSize);
+        Compressor.compress(input, output, shardSize, numThreads);
     }
 
-    public static void compress(final File input, final File outputDir, final Integer shardSize) {
-        final ExecutorService pool = Executors.newFixedThreadPool(100);
+    public static void compress(final File input, final File outputDir, final Integer shardSize, final Integer numThreads) {
+        final ExecutorService pool = Executors.newFixedThreadPool(numThreads);
         final ArrayList<Long> splitPoints = Compressor.findSplitPoints(input.getAbsolutePath(), shardSize);
 
         final int totalDigits = String.valueOf(splitPoints.size()).length();

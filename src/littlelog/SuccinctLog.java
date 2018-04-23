@@ -7,6 +7,7 @@ import edu.berkeley.cs.succinct.regex.parser.RegExParsingException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Set;
 
 import static java.lang.Math.toIntExact;
@@ -42,19 +43,25 @@ public class SuccinctLog {
         return this.fileSize;
     }
 
-    public void query(final String query) {
+    public void query(final String query, final ArrayList<String> results, final Integer index, final Object lock) {
         try {
             final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
             final Set<RegExMatch> chunkResults = succinctRegEx.compute();
             ExtractedLine extractedLine;
             Long lastLineEnd = new Long(0);
+            final StringBuilder sb = new StringBuilder();
+
             for (final RegExMatch result : chunkResults) {
 //                this.extractLine(result.getOffset());
                 extractedLine = this.extractLine(result.getOffset());
                 if (extractedLine.lineEndIndex > lastLineEnd) {
-                    System.out.println(extractedLine.text);
+                    sb.append(extractedLine.text.trim() + "\n");
+//                    System.out.println(extractedLine.text);
                     lastLineEnd = extractedLine.lineEndIndex;
                 }
+            }
+            synchronized (lock) {
+                results.set(index, sb.toString());
             }
 //            System.out.println("Result size = " + chunkResults.size());
         } catch (final RegExParsingException e) {
@@ -118,8 +125,39 @@ public class SuccinctLog {
         return extracted;
     }
 
-    public void count(final String query) {
-        System.out.println(this.filename + ": count[" + query + "] = " + this.succinctFileBuffer.count(query.getBytes()));
+    public void query(final String query) {
+        try {
+            final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
+            final Set<RegExMatch> chunkResults = succinctRegEx.compute();
+            ExtractedLine extractedLine;
+            Long lastLineEnd = new Long(0);
+            for (final RegExMatch result : chunkResults) {
+//                this.extractLine(result.getOffset());
+                extractedLine = this.extractLine(result.getOffset());
+                if (extractedLine.lineEndIndex > lastLineEnd) {
+                    System.out.println(extractedLine.text);
+                    lastLineEnd = extractedLine.lineEndIndex;
+                }
+            }
+//            System.out.println("Result size = " + chunkResults.size());
+        } catch (final RegExParsingException e) {
+            System.err.println("Could not parse regular expression: [" + query + "]: " + e.getMessage());
+        }
     }
 
+    public void count(final String query) {
+        final long count = this.succinctFileBuffer.count(query.getBytes());
+        if (count > 0) {
+            System.out.println(count);
+        }
+    }
+
+    public void count(final String query, final long[] total, final Object lock) {
+        final long count = this.succinctFileBuffer.count(query.getBytes());
+        if (count > 0) {
+            synchronized (lock) {
+                total[0] = total[0] + count;
+            }
+        }
+    }
 }
