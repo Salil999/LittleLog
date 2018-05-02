@@ -104,6 +104,7 @@ public class Main {
     //TODO: if grep over 100 lines, dont output to terminal, specify filepath, make line number tunable param
     //TODO: figure out way to extract data from thread instead of printing to terminal, use vars to return, possibly on .shutdown()
     //TODO: make grep correct order using parameter passing and string builder
+    //TODO: do not allow to search for "\n" newlines
 
     private static void compress(final CommandLine cmd) {
         final File input;

@@ -39,6 +39,21 @@ public class SuccinctLog {
         return succinctFileBuffer;
     }
 
+    public void findNewlines() {
+        try {
+            final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, "\n");
+            final Set<RegExMatch> chunkResults = succinctRegEx.compute();
+            System.out.println("newline result size: " + chunkResults.size());
+
+            for (final RegExMatch result : chunkResults) {
+                System.out.println(result);
+            }
+
+        } catch (final RegExParsingException e) {
+            System.err.println("Could not parse query for newline: " + e.getMessage());
+        }
+    }
+
     public void query(final String query, final ArrayList<String> results, final Integer index, final Object lock) {
         try {
             final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
