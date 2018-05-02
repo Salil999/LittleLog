@@ -52,4 +52,6 @@ fabric.properties
 .idea/*
 *.iml
 lib/*
-src/logfiles/
+*.txt
+*.log
+*.succinct
