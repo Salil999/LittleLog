@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+cd $(pwd)/../src/
+javac -Xlint:unchecked -cp  .:$(pwd)/../lib/* littlelog/*.java
+time java -Xmx12G  -cp .:$(pwd)/../lib/* littlelog/Main $1 $2 $3 $4
+find . -type f -path "*/*" -name "*.class" -exec rm -f {} \;
+
