@@ -55,3 +55,4 @@ lib/*
 *.txt
 *.log
 *.succinct
+*.gz
