@@ -16,6 +16,7 @@ import static java.lang.Math.toIntExact;
 public class SuccinctLog {
     private final SuccinctFileBuffer succinctFileBuffer;
     private final String filename;
+    //    private final ArrayList<Long> newlines;
     private Integer fileSize;
 
     public SuccinctLog(final String filepath) {
@@ -23,6 +24,8 @@ public class SuccinctLog {
         this.filename = file.getName();
         this.fileSize = 0;
         this.succinctFileBuffer = this.readFromFile(filepath);
+//        this.newlines = new ArrayList<>();
+//        this.findNewlines();
     }
 
     private SuccinctFileBuffer readFromFile(final String filename) {
@@ -39,20 +42,19 @@ public class SuccinctLog {
         return succinctFileBuffer;
     }
 
-    public void findNewlines() {
-        try {
-            final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, "\n");
-            final Set<RegExMatch> chunkResults = succinctRegEx.compute();
-            System.out.println("newline result size: " + chunkResults.size());
-
-            for (final RegExMatch result : chunkResults) {
-                System.out.println(result);
-            }
-
-        } catch (final RegExParsingException e) {
-            System.err.println("Could not parse query for newline: " + e.getMessage());
-        }
-    }
+//    private void findNewlines() {
+//        try {
+//            final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, "\n");
+//            final Set<RegExMatch> chunkResults = succinctRegEx.compute();
+//
+//            for (final RegExMatch result : chunkResults) {
+//                this.newlines.add(result.getOffset());
+//            }
+//
+//        } catch (final RegExParsingException e) {
+//            System.err.println("Could not parse query for newline: " + e.getMessage());
+//        }
+//    }
 
     public void query(final String query, final ArrayList<String> results, final Integer index, final Object lock) {
         try {
@@ -63,8 +65,11 @@ public class SuccinctLog {
             final StringBuilder sb = new StringBuilder();
 
             for (final RegExMatch result : chunkResults) {
-//                this.extractLine(result.getOffset());
+
                 extractedLine = this.extractLine(result.getOffset());
+//                extractedLine = this.extractLineBinarySearch(result.getOffset());
+
+
                 if (extractedLine.lineEndIndex > lastLineEnd) {
                     sb.append(extractedLine.text.trim() + "\n");
 //                    System.out.println(extractedLine.text);
@@ -84,7 +89,7 @@ public class SuccinctLog {
         final StringBuilder line = new StringBuilder();
         String extracted;
         Long offset = originalOffset;
-        final Integer shift = 30;
+        final Integer shift = 40;
 
         while (true) {
             if (offset >= this.fileSize - shift) {
@@ -132,6 +137,42 @@ public class SuccinctLog {
 
         return new ExtractedLine(line.toString(), lineEnd);
     }
+
+//    private ExtractedLine extractLineBinarySearch(final Long originalOffset) {
+//        Long start = new Long(0);
+//        Long end = new Long(this.newlines.size() - 1);
+//        Long mid = (start + end) / 2;
+//
+//        String line = "";
+//        while (true) {
+//            final Long prevVal = this.newlines.get(toIntExact(mid - 1));
+//            final Long midVal = this.newlines.get(toIntExact(mid));
+//            final Long nextVal = this.newlines.get(toIntExact(mid + 1));
+//
+//            if (originalOffset < midVal) {
+//                if (originalOffset > prevVal) {
+//                    line = this.succinctFileBuffer.extract(prevVal, toIntExact(midVal - prevVal));
+//                    return new ExtractedLine(line, midVal);
+//                }
+//
+//                end = mid - 1;
+//                mid = (start + end) / 2;
+//
+//            } else if (originalOffset > midVal) {
+//                if (originalOffset < nextVal) {
+//                    line = this.succinctFileBuffer.extract(midVal, toIntExact(nextVal - midVal));
+//                    return new ExtractedLine(line, nextVal);
+//                }
+//
+//                start = mid + 1;
+//                mid = (start + end) / 2;
+//
+//            } else {
+//                line = this.succinctFileBuffer.extract(midVal, toIntExact(nextVal - midVal));
+//                return new ExtractedLine(line, nextVal);
+//            }
+//        }
+//    }
 
     public void query(final String query) {
         try {
