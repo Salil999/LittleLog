@@ -147,7 +147,6 @@ public class Compressor {
     }
 
     public static void compress(final File input, final File outputDir, final Integer shardSize, final Integer numThreads) {
-        System.out.println("numthreads: " + numThreads);
         final ExecutorService pool = Executors.newFixedThreadPool(numThreads);
         final ArrayList<Long> splitPoints = Compressor.findSplitPoints(input.getAbsolutePath(), shardSize);
 
