@@ -50,6 +50,7 @@ public class Main {
                 .argName("path")
                 .build());
 
+
         options.addOption(Option.builder("o")
                 .longOpt("output")
                 .required(false)
@@ -68,6 +69,7 @@ public class Main {
                 .argName("int")
                 .build());
 
+
         options.addOption(Option.builder("t")
                 .longOpt("threads")
                 .required(false)
@@ -76,7 +78,6 @@ public class Main {
                 .hasArg()
                 .argName("int")
                 .build());
-
 
         final CommandLineParser parser = new DefaultParser();
         final HelpFormatter formatter = new HelpFormatter();
@@ -91,6 +92,14 @@ public class Main {
             System.exit(1);
             return;
         }
+
+//        System.out.println("i " + cmd.getOptionValue("i"));
+//        System.out.println("o " + cmd.getOptionValue("o"));
+//        System.out.println("c " + cmd.getOptionValue("c"));
+//        System.out.println("g " + cmd.getOptionValue("g"));
+//        System.out.println("n " + cmd.getOptionValue("n"));
+//        System.out.println("t " + cmd.getOptionValue("t"));
+//        System.out.println("s " + cmd.getOptionValue("s"));
 
         final Boolean compress = cmd.hasOption("c");
 
