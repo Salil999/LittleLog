@@ -2,4 +2,8 @@
 
 # $1 = Xmb
 # $2 = regex
-./grep_test_helper.sh $1 $2 1> grep_$2/$1mb_results.txt 2>&1
+
+X = $1
+regex = $2
+
+./grep_test_helper.sh MB regex 1> grep_regex/Xmb_results.txt 2>&1
