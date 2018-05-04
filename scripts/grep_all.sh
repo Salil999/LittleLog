@@ -7,8 +7,7 @@ function grep_succinct () {
 
     for run in {1..5}
     do
-#        echo $1 $2
-        ./littlelog -i=../../logfiles/succinct_logs/out_"$1" -g "$2" -t=100 | wc -l
+        ./grep_test_helper.sh "$shard_size" "$regex" 1> grep_"$regex"/"$shard_size"mb_results.txt 2>&1
     done
 }
 
