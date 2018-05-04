@@ -5,10 +5,7 @@ function grep_succinct () {
     local shard_size=$1
     local regex=$2
 
-    for run in {1..5}
-    do
-        ./grep_test_helper.sh "$shard_size" "$regex" 1> grep_"$regex"/"$shard_size"mb_results.txt 2>&1
-    done
+    ./grep_test_helper.sh "$shard_size" "$regex" 1> grep_"$regex"/"$shard_size"mb_results.txt 2>&1
 }
 
 function grep_all () {
