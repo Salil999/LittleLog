@@ -23,12 +23,12 @@ function grep_all () {
                             "500"
                             )
 
-    for i in "${shard_sizes[@]}"
+    for s in "${shard_sizes[@]}"
     do
-       grep_succinct "$i" "$regex"
+       grep_succinct "$s" "$regex"
     done
 
-    time grep "$regex "../../logfiles/input_logs/http.log > grep_"$regex"/grep_"$regex"_results.txt
+#    time grep "$regex "../../logfiles/input_logs/http.log > grep_"$regex"/grep_"$regex"_results.txt
 }
 
 
