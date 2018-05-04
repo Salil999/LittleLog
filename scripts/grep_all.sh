@@ -16,9 +16,7 @@ function grep_succinct () {
 
 
 declare -a arr=("228.34.77.223"
-                "GET"
-                "element3"
-                "element4"
+                "Dec/2015"
                 )
 
 for i in "${arr[@]}"
