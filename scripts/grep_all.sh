@@ -1,4 +1,5 @@
-##!/usr/bin/env bash
+#!/usr/bin/env bash
+
 #
 #
 #function grep_succinct () {
@@ -37,7 +38,6 @@
 #   grep_all "$r"
 #done
 
-#!/usr/bin/env bash
 
 
 function grep_succinct () {
