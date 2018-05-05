@@ -49,7 +49,7 @@ function grep_succinct () {
 #    ./grep_test_helper.sh 200 regex 1> grep_"$regex"/200mb_results.txt 2>&1
 #    ./grep_test_helper.sh 300 regex 1> grep_"$regex"/300mb_results.txt 2>&1
     ./grep_test_helper.sh 500 regex 1> grep_"$regex"/500mb_results.txt 2>&1
-    time grep "$regex "../../logfiles/input_logs/http.log > grep_"$regex"/grep_"$regex"_results.txt
+#    time grep "$regex "../../logfiles/input_logs/http.log > grep_"$regex"/grep_"$regex"_results.txt
 }
 
 
