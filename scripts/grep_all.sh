@@ -15,13 +15,16 @@ function grep_succinct () {
 }
 
 declare -a arr=(
-                "228.34.77.223"
+#azure-vm
+#                "228.34.77.223"
 #                "02:32:17"
 #                "2023"
 #                "PUT"
 #                "GET"
 #                "HTTP"
-#                "109.169.248.247"
+
+#cs-vm1 http.log
+                 "192.168.202.79"
                 )
 
 for i in "${arr[@]}"
