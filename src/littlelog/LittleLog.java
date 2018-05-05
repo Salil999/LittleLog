@@ -41,7 +41,7 @@ public class LittleLog {
         return fileName;
     }
 
-    public void query(final String query, final File input) {
+    public void queryInOrder(final String query, final File input) {
         final ArrayList<String> results = new ArrayList<>();
 
         if (input.isFile() && input.getName().endsWith(".succinct")) {
@@ -104,6 +104,28 @@ public class LittleLog {
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void query(final String query, final File input) {
+        if (input.isFile() && input.getName().endsWith(".succinct")) {
+
+            final SuccinctLog succinctLog = new SuccinctLog(input.getAbsolutePath());
+            succinctLog.query(query);
+
+        } else if (input.isDirectory()) {
+            final ArrayList<File> files = this.getAllFiles(input);
+
+            for (int i = 0; i < files.size(); i++) {
+                final File file = files.get(i);
+                if (file.getName().endsWith(".succinct")) {
+                    this.pool.execute(() -> {
+                        final SuccinctLog succinctLog = new SuccinctLog(file.getAbsolutePath());
+                        succinctLog.query(query);
+                    });
+                }
+            }
+        }
+        this.pool.shutdown();
     }
 
     public void count(final String query, final File input) {

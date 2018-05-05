@@ -56,6 +56,7 @@ public class SuccinctLog {
 //        }
 //    }
 
+
     public void query(final String query, final ArrayList<String> results, final Integer index, final Object lock) {
         try {
             final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
@@ -180,12 +181,19 @@ public class SuccinctLog {
             final Set<RegExMatch> chunkResults = succinctRegEx.compute();
             ExtractedLine extractedLine;
             Long lastLineEnd = new Long(0);
+            int count = 0;
+            final int last = chunkResults.size() - 1;
             for (final RegExMatch result : chunkResults) {
                 extractedLine = this.extractLine(result.getOffset());
                 if (extractedLine.lineEndIndex > lastLineEnd) {
-                    System.out.println(extractedLine.text);
+                    if (count != last) {
+                        System.out.println(extractedLine.text);
+                    } else {
+                        System.out.print(extractedLine.text);
+                    }
                     lastLineEnd = extractedLine.lineEndIndex;
                 }
+                count++;
             }
         } catch (final RegExParsingException e) {
             System.err.println("Could not parse regular expression: [" + query + "]: " + e.getMessage());
