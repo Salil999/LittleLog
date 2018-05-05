@@ -9,7 +9,7 @@ function grep_succinct () {
 #    ./grep_test.sh 200 "$regex"
 #    ./grep_test.sh 300 "$regex"
 #    ./grep_test.sh 500 "$regex"
-    ./grep_file.sh > grep_"$regex"/grep_results.txt
+    ./grep_file.sh > grep_"$regex"/grep_"$regex"_results.txt
 }
 
 declare -a arr=("228.34.77.223"
