@@ -14,8 +14,8 @@ function grep_succinct () {
 
 declare -a arr=(
 #                "228.34.77.223"
-                "02:32:17"
-                "2023"
+#                "02:32:17"
+#                "2023"
                 "PUT"
                 "GET"
                 "HTTP"
