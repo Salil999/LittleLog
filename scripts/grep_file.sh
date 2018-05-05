@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-time grep $1 ../../logfiles/input_logs/http.log | wc -l
+./grep_file_helper.sh $1 1> grep_$1/grep_$1_results.txt 2>&1
