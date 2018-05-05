@@ -71,14 +71,14 @@ public class SuccinctLog {
 
 
                 if (extractedLine.lineEndIndex > lastLineEnd) {
-                    sb.append(extractedLine.text.trim() + "\n");
-//                    System.out.println(extractedLine.text);
+//                    sb.append(extractedLine.text.trim() + "\n");
+                    System.out.println(extractedLine.text);
                     lastLineEnd = extractedLine.lineEndIndex;
                 }
             }
-            synchronized (lock) {
-                results.set(index, sb.toString());
-            }
+//            synchronized (lock) {
+//                results.set(index, sb.toString());
+//            }
 //            System.out.println("Result size = " + chunkResults.size());
         } catch (final RegExParsingException e) {
             System.err.println("Could not parse regular expression: [" + query + "]: " + e.getMessage());
