@@ -12,8 +12,13 @@ function grep_succinct () {
     ./grep_file.sh "$regex"
 }
 
-declare -a arr=("228.34.77.223"
-#                "Dec/2015"
+declare -a arr=(
+#                "228.34.77.223"
+                "02:32:17"
+                "2023"
+                "PUT"
+                "GET"
+                "HTTP"
                 )
 
 for i in "${arr[@]}"
