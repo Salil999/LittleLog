@@ -3,12 +3,12 @@
 function count_succinct () {
     local regex=$1
     mkdir count_"$regex"
-    ./count_succinct.sh 20 "$regex"
-    ./count_succinct.sh 50 "$regex"
-    ./count_succinct.sh 100 "$regex"
-    ./count_succinct.sh 200 "$regex"
-    ./count_succinct.sh 300 "$regex"
-    ./count_succinct.sh 500 "$regex"
+#    ./count_succinct.sh 20 "$regex"
+#    ./count_succinct.sh 50 "$regex"
+#    ./count_succinct.sh 100 "$regex"
+#    ./count_succinct.sh 200 "$regex"
+#    ./count_succinct.sh 300 "$regex"
+#    ./count_succinct.sh 500 "$regex"
     ./count_file.sh "$regex"
 }
 
