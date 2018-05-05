@@ -186,7 +186,7 @@ public class SuccinctLog {
             for (final RegExMatch result : chunkResults) {
                 extractedLine = this.extractLine(result.getOffset());
                 if (extractedLine.lineEndIndex > lastLineEnd) {
-                    if (count != last) {
+                    if (count == last) {
                         System.out.println(extractedLine.text);
                     } else {
                         System.out.print(extractedLine.text);
