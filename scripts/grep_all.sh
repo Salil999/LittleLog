@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+./compile.sh
+
 function grep_succinct () {
     local regex=$1
     mkdir grep_"$regex"
@@ -25,3 +27,5 @@ for i in "${arr[@]}"
 do
    grep_succinct "$i"
 done
+
+./teardown.sh

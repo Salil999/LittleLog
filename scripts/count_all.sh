@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+./compile.sh
+
 function count_succinct () {
     local regex=$1
     mkdir count_"$regex"
@@ -25,3 +27,5 @@ for i in "${arr[@]}"
 do
    count_succinct "$i"
 done
+
+./teardown.sh
