@@ -103,7 +103,9 @@ public class LittleLog {
                 totalResultsLeft += result.num;
             }
             System.out.println(sb.toString().trim());
-            System.out.println("..." + totalResultsLeft + " more");
+            if (totalResultsLeft > 0) {
+                System.out.println("..." + totalResultsLeft + " more");
+            }
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }
