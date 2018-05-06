@@ -4,5 +4,5 @@ mkdir results
 mkdir results/count
 mkdir results/grep
 
-./background.sh "./count_all"
-./background.sh "./grep_all"
+./background.sh "./count_all.sh"
+./background.sh "./grep_all.sh"
