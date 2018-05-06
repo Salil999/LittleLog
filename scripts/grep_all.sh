@@ -4,7 +4,7 @@
 
 function grep_succinct () {
     local regex=$1
-    mkdir grep_"$regex"
+    mkdir results/grep/grep_"$regex"
     ./grep_succinct.sh 20 "$regex"
     ./grep_succinct.sh 50 "$regex"
     ./grep_succinct.sh 100 "$regex"

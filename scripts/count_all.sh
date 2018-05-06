@@ -4,7 +4,7 @@
 
 function count_succinct () {
     local regex=$1
-    mkdir count_"$regex"
+    mkdir results/count/count_"$regex"
     ./count_succinct.sh 20 "$regex"
     ./count_succinct.sh 50 "$regex"
     ./count_succinct.sh 100 "$regex"
