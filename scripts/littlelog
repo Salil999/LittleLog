@@ -2,5 +2,5 @@
 #
 #./compile.sh
 cd $(pwd)/../src/
-time java -Xmx40G  -cp .:$(pwd)/../lib/* littlelog/Main "$@"
+time java -Xmx30G  -cp .:$(pwd)/../lib/* littlelog/Main "$@"
 #./teardown.sh
