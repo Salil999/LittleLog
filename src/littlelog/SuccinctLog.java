@@ -57,36 +57,41 @@ public class SuccinctLog {
 //    }
 
 
-    public void query(final String query, final ArrayList<String> results, final Integer index, final Object lock) {
+    public void query(final String query, final Integer limit, final ArrayList<StringNumTuple> results, final Integer index, final Object lock) {
         try {
             final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
             final Set<RegExMatch> chunkResults = succinctRegEx.compute();
-            ExtractedLine extractedLine;
+            StringNumTuple extractedLine;
             Long lastLineEnd = new Long(0);
             final StringBuilder sb = new StringBuilder();
+            int resultCount = 0;
 
             for (final RegExMatch result : chunkResults) {
+                if (resultCount >= limit) {
+                    break;
+                }
 
                 extractedLine = this.extractLine(result.getOffset());
-//                extractedLine = this.extractLineBinarySearch(result.getOffset());
+//                stringNumTuple = this.extractLineBinarySearch(result.getOffset());
 
 
-                if (extractedLine.lineEndIndex > lastLineEnd) {
-//                    sb.append(extractedLine.text.trim() + "\n");
-                    System.out.println(extractedLine.text);
-                    lastLineEnd = extractedLine.lineEndIndex;
+                if (extractedLine.num > lastLineEnd) {
+                    sb.append(extractedLine.str.trim() + "\n");
+//                    System.out.println(stringNumTuple.str);
+                    lastLineEnd = extractedLine.num;
+                    resultCount++;
                 }
             }
-//            synchronized (lock) {
-//                results.set(index, sb.toString());
-//            }
+            synchronized (lock) {
+                results.set(index, new StringNumTuple(sb.toString(), new Long(chunkResults.size() - resultCount)));
+            }
 //            System.out.println("Result size = " + chunkResults.size());
         } catch (final RegExParsingException e) {
             System.err.println("Could not parse regular expression: [" + query + "]: " + e.getMessage());
         }
     }
 
-    private ExtractedLine extractLine(final Long originalOffset) {
+    private StringNumTuple extractLine(final Long originalOffset) {
         final StringBuilder line = new StringBuilder();
         String extracted;
         Long offset = originalOffset;
@@ -136,10 +141,10 @@ public class SuccinctLog {
             }
         }
 
-        return new ExtractedLine(line.toString(), lineEnd);
+        return new StringNumTuple(line.toString(), lineEnd);
     }
 
-//    private ExtractedLine extractLineBinarySearch(final Long originalOffset) {
+//    private StringNumTuple extractLineBinarySearch(final Long originalOffset) {
 //        Long start = new Long(0);
 //        Long end = new Long(this.newlines.size() - 1);
 //        Long mid = (start + end) / 2;
@@ -153,7 +158,7 @@ public class SuccinctLog {
 //            if (originalOffset < midVal) {
 //                if (originalOffset > prevVal) {
 //                    line = this.succinctFileBuffer.extract(prevVal, toIntExact(midVal - prevVal));
-//                    return new ExtractedLine(line, midVal);
+//                    return new StringNumTuple(line, midVal);
 //                }
 //
 //                end = mid - 1;
@@ -162,7 +167,7 @@ public class SuccinctLog {
 //            } else if (originalOffset > midVal) {
 //                if (originalOffset < nextVal) {
 //                    line = this.succinctFileBuffer.extract(midVal, toIntExact(nextVal - midVal));
-//                    return new ExtractedLine(line, nextVal);
+//                    return new StringNumTuple(line, nextVal);
 //                }
 //
 //                start = mid + 1;
@@ -170,28 +175,28 @@ public class SuccinctLog {
 //
 //            } else {
 //                line = this.succinctFileBuffer.extract(midVal, toIntExact(nextVal - midVal));
-//                return new ExtractedLine(line, nextVal);
+//                return new StringNumTuple(line, nextVal);
 //            }
 //        }
 //    }
 
-    public void query(final String query) {
+    public void query(final String query, final Integer limit) {
         try {
             final SuccinctRegEx succinctRegEx = new SuccinctRegEx(this.succinctFileBuffer, query);
             final Set<RegExMatch> chunkResults = succinctRegEx.compute();
-            ExtractedLine extractedLine;
+            StringNumTuple stringNumTuple;
             Long lastLineEnd = new Long(0);
             int count = 0;
             final int last = chunkResults.size() - 1;
             for (final RegExMatch result : chunkResults) {
-                extractedLine = this.extractLine(result.getOffset());
-                if (extractedLine.lineEndIndex > lastLineEnd) {
-                    System.out.print(extractedLine.text);
+                stringNumTuple = this.extractLine(result.getOffset());
+                if (stringNumTuple.num > lastLineEnd) {
+                    System.out.print(stringNumTuple.str);
                     if (count != last) {
                         System.out.println();
-//                        System.out.println(extractedLine.text);
+//                        System.out.println(stringNumTuple.str);
                     }
-                    lastLineEnd = extractedLine.lineEndIndex;
+                    lastLineEnd = stringNumTuple.num;
                 }
                 count++;
             }

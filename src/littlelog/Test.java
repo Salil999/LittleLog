@@ -12,7 +12,7 @@ public class Test {
 //        littleLog.query("\n", file);
 
         final LittleLog littleLog = new LittleLog(100);
-        littleLog.query("109.169.248.247", file);
+        littleLog.query("109.169.248.247", file, 100);
 
     }
 }

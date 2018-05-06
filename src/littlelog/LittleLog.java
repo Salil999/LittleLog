@@ -41,13 +41,13 @@ public class LittleLog {
         return fileName;
     }
 
-    public void queryInOrder(final String query, final File input) {
-        final ArrayList<String> results = new ArrayList<>();
+    public void queryInOrder(final String query, final File input, final Integer limit) {
+        final ArrayList<StringNumTuple> results = new ArrayList<>();
 
         if (input.isFile() && input.getName().endsWith(".succinct")) {
 
             final SuccinctLog succinctLog = new SuccinctLog(input.getAbsolutePath());
-            succinctLog.query(query);
+            succinctLog.query(query, limit);
 
         } else if (input.isDirectory()) {
             final ArrayList<File> files = this.getAllFiles(input);
@@ -75,7 +75,7 @@ public class LittleLog {
             });
 
             for (int i = 0; i < files.size(); i++) {
-                results.add("");
+                results.add(null);
             }
 
             final Object lock = new Object();
@@ -86,7 +86,7 @@ public class LittleLog {
                 if (file.getName().endsWith(".succinct")) {
                     this.pool.execute(() -> {
                         final SuccinctLog succinctLog = new SuccinctLog(file.getAbsolutePath());
-                        succinctLog.query(query, results, index, lock);
+                        succinctLog.query(query, limit, results, index, lock);
                     });
                 }
             }
@@ -97,20 +97,23 @@ public class LittleLog {
             while (!this.pool.awaitTermination(50, TimeUnit.MILLISECONDS)) {
             }
             final StringBuilder sb = new StringBuilder();
-            for (final String result : results) {
-                sb.append(result);
+            int totalResultsLeft = 0;
+            for (final StringNumTuple result : results) {
+                sb.append(result.str);
+                totalResultsLeft += result.num;
             }
             System.out.println(sb.toString().trim());
+            System.out.println("..." + totalResultsLeft + " more");
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public void query(final String query, final File input) {
+    public void query(final String query, final File input, final Integer limit) {
         if (input.isFile() && input.getName().endsWith(".succinct")) {
 
             final SuccinctLog succinctLog = new SuccinctLog(input.getAbsolutePath());
-            succinctLog.query(query);
+            succinctLog.query(query, limit);
 
         } else if (input.isDirectory()) {
             final ArrayList<File> files = this.getAllFiles(input);
@@ -120,7 +123,7 @@ public class LittleLog {
                 if (file.getName().endsWith(".succinct")) {
                     this.pool.execute(() -> {
                         final SuccinctLog succinctLog = new SuccinctLog(file.getAbsolutePath());
-                        succinctLog.query(query);
+                        succinctLog.query(query, limit);
                     });
                 }
             }

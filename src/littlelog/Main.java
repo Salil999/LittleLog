@@ -61,7 +61,7 @@ public class Main {
                 .build());
 
         options.addOption(Option.builder("s")
-                .longOpt("shardSize")
+                .longOpt("shard-size")
                 .required(false)
                 .type(String.class)
                 .desc("shard size in MB")
@@ -75,6 +75,15 @@ public class Main {
                 .required(false)
                 .type(String.class)
                 .desc("number of threads")
+                .hasArg()
+                .argName("int")
+                .build());
+
+        options.addOption(Option.builder("l")
+                .longOpt("limit")
+                .required(false)
+                .type(String.class)
+                .desc("query result limit, default=100")
                 .hasArg()
                 .argName("int")
                 .build());
@@ -100,6 +109,7 @@ public class Main {
 //        System.out.println("n " + cmd.getOptionValue("n"));
 //        System.out.println("t " + cmd.getOptionValue("t"));
 //        System.out.println("s " + cmd.getOptionValue("s"));
+//        System.out.println("l " + cmd.getOptionValue("l"));
 
         final Boolean compress = cmd.hasOption("c");
 
@@ -183,7 +193,7 @@ public class Main {
             return;
         }
 
-        Integer numThreads = null;
+        final Integer numThreads;
         try {
             numThreads = Integer.parseInt((String) cmd.getParsedOptionValue("t"));
         } catch (final Exception e) {
@@ -214,7 +224,22 @@ public class Main {
             final LittleLog littleLog = new LittleLog(numThreads);
             if (cmd.hasOption("g")) {
                 final String query = cmd.getOptionValue("g");
-                littleLog.query(query, input);
+
+                final int limit;
+
+                if (!cmd.hasOption("l")) {
+                    limit = 100;
+                } else {
+                    try {
+                        limit = Integer.parseInt(cmd.getOptionValue("l"));
+                    } catch (final NumberFormatException e) {
+                        System.out.println("ERROR: query result limit must be number");
+                        return;
+                    }
+                }
+
+//                littleLog.query(query, input, limit);
+                littleLog.queryInOrder(query, input, limit);
             } else if (cmd.hasOption("n")) {
                 final String query = cmd.getOptionValue("n");
                 littleLog.count(query, input);

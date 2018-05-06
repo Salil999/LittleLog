@@ -47,7 +47,7 @@ public class Compressor {
 
         final FileOutputStream fos = new FileOutputStream(outputPath);
         final DataOutputStream os = new DataOutputStream(fos);
-        final String type = "text-file";
+        final String type = "str-file";
 
         final long start = System.currentTimeMillis();
         SuccinctCore.LOG.setLevel(Level.OFF);
@@ -64,12 +64,12 @@ public class Compressor {
                 }
                 break;
             case -1084160484:
-                if (type.equals("text-file")) {
+                if (type.equals("str-file")) {
                     var8 = 0;
                 }
                 break;
             case -391088064:
-                if (type.equals("indexed-text-file")) {
+                if (type.equals("indexed-str-file")) {
                     var8 = 2;
                 }
         }
