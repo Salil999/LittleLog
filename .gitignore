@@ -56,5 +56,4 @@ lib/*
 *.log
 *.succinct
 *.gz
-experiment_data/
-results/
+results*
